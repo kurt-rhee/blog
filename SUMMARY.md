@@ -1,0 +1,16 @@
+# Table of contents
+
+* [About Me](README.md)
+* [Writings](writings/README.md)
+  * [Product](writings/product/README.md)
+    * [Product for Engineers](writings/product/product-for-engineers.md)
+  * [Software](writings/software/README.md)
+    * [Rust for Scientific Software Development](writings/software/rust-for-scientific-software-development.md)
+    * [Writing Python in 2024](writings/software/writing-python-in-2024.md)
+  * [PV](writings/pv/README.md)
+    * [Shade Shape Calculation Algorithms](writings/pv/shade-shape-calculation-algorithms.md)
+    * [So You Want to be a PV Performance Engineer](writings/pv/so-you-want-to-be-a-pv-performance-engineer.md)
+    * [A Disambiguation of Horizontal Single Axis Tracking Algorithms](writings/pv/a-disambiguation-of-horizontal-single-axis-tracking-algorithms.md)
+    * [A Primer on RetroTransposition](writings/pv/a-primer-on-retrotransposition.md)
+    * [How to Contribute to PVLIB](writings/pv/how-to-contribute-to-pvlib.md)
+    * [A Primer on Electrical Mismatch](writings/pv/a-primer-on-electrical-mismatch.md)
