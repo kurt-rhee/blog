@@ -53,4 +53,10 @@ Some reasons why I use it over pip:
 
 ### FastAPI > Flask&#x20;
 
-* FastAPI gets you up and running with an order of magnitude less code than Flask
+* FastAPI gets you up and running with an order of magnitude less code than Flask\
+
+
+### Streamlit > Dash
+
+* Streamlit lets you build simple frontends for your code in pure python.   It's easier to use and more powerful than dash.
+
