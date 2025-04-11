@@ -22,7 +22,7 @@ I recommended this last year in Writing Python in 2024, and the recommendation s
 
 ### Ruff
 
-Ruff is by the same company that makes uv.  It's a really fast linter/formatter that autofixes all the formatting in your code base.  One of the main benefits of this is that PR reviewers don't need to waste time looking at git diffs between files that only have cosmetic formatting differences.
+Ruff is by the same company ([astral](https://astral.sh/)) that makes uv.  It's a really fast linter/formatter that autofixes all the formatting in your code base.  One of the main benefits of this is that PR reviewers don't need to waste time looking at git diffs between files that only have cosmetic formatting differences.
 
 
 
