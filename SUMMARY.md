@@ -7,6 +7,7 @@
   * [Software](writings/software/README.md)
     * [Rust for Scientific Software Development](writings/software/rust-for-scientific-software-development.md)
     * [Writing Python in 2024](writings/software/writing-python-in-2024.md)
+    * [Writing Python in 2025](writings/software/writing-python-in-2025.md)
   * [PV](writings/pv/README.md)
     * [Shade Shape Calculation Algorithms](writings/pv/shade-shape-calculation-algorithms.md)
     * [So You Want to be a PV Performance Engineer](writings/pv/so-you-want-to-be-a-pv-performance-engineer.md)
