@@ -44,9 +44,13 @@ In line with the vim motions, lazygit has made it so that I don't have to reach 
 
 ### Simulation File Naming
 
+<figure><img src="../../.gitbook/assets/image (31).png" alt=""><figcaption></figcaption></figure>
+
 I have a new file structure for simulation code.  In each folder I name my overall controller file c\_placeholder.py and then all of the steps in that simulation s01\_placeholder.py.  The controller just calls all the steps in order and all of my actual logic is in the steps.  This keeps all my code organized into the order that the code is actually called.  Of course, not all code benefits from being organized this way, but when it does it is really useful for being able to understand the logic of simulation code quickly.\
 \
-I also wrote a script to add a number to the steps so that I can arbitrarily add new steps in the middle of a series of them. \
+I also wrote a script to add a number to the steps so that I can arbitrarily add new steps in the middle of a series of them.&#x20;
+
+\
 
 
 ### Diff Checker
