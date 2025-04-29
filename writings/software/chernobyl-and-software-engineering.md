@@ -19,7 +19,7 @@ So, tests. They reduce reactivity like brakes on a car.
 
 But there's a third factor to consider, users. Users interact with the system. As they do they find bugs, but once major bugs are cleared they instead create requests for features, or what we call a "void." In software projects, there's something called a "positive void coefficient." What does that mean?
 
-It means that the more users present within the system the higher the reactivity, which means more more features, which means more users, which means -- it would appear we we have a vicious cycle on our hands. And we would were it not for this... the "negative senior coefficient."
+It means that the more users present within the system the higher the reactivity, which means more features, which means more users, which means -- it would appear we have a vicious cycle on our hands. And we would were it not for this... the "negative senior coefficient."
 
 When software engineers get more experience with a code-base it gets less reactive. So features increase reactivity; tests and bug reports reduce it; feature requests increase it; team experience reduces it. This is the invisible dance that powers entire economies without sweat or flame. And it is beautiful when things are normal.
 
@@ -55,8 +55,8 @@ In the show, the operators can feel that something is wrong in the reactor, but 
 \
 There is no answer in the show to how to fix this issue, and you won't find any concrete answers in this blog post either.  \
 \
-Operators, trust your instinct, if a feature takes a little longer to get out to get out right, but it's a balance.  If you don't have enough reactivity your product won't get users and you'll be out of a job no matter how perfect the code-base is.  \
+Operators, trust your instinct. If a feature takes a little longer to get out to get out right, then that's okay but it's a balance.  If you don't have enough reactivity your product won't get users and you'll be out of a job no matter how perfect the code-base is, and remember, everything is context specific.  A startup can handle more reactivity than an incumbent enterprise code-base. \
 \
-Managers, trust your operators, hire good ones.  Balance the number of seniors and juniors on your team.  Remember, everything you do has second order and third order effects.  Spend some time talking to your operators about those effects.\
+Managers, trust your operators.  Hire good ones.  Balance the number of seniors and juniors on your team.  Remember, everything you do has second order and third order effects.  Spend some time talking to your operators about those effects.\
 \
 It doesn't take a nuclear physicist to understand what is going on inside of a software project. &#x20;
