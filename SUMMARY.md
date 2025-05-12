@@ -10,7 +10,7 @@
     * [Writing Python in 2025](writings/software/writing-python-in-2025.md)
     * [Chernobyl and Software Engineering](writings/software/chernobyl-and-software-engineering.md)
   * [PV](writings/pv/README.md)
-    * [Modeling of Operating Assets (IN PROGRESS)](writings/pv/modeling-of-operating-assets-in-progress.md)
+    * [Modeling Operating PV Assets](writings/pv/modeling-operating-pv-assets.md)
     * [Shade Shape Calculation Algorithms](writings/pv/shade-shape-calculation-algorithms.md)
     * [So You Want to be a PV Performance Engineer](writings/pv/so-you-want-to-be-a-pv-performance-engineer.md)
     * [A Disambiguation of Horizontal Single Axis Tracking Algorithms](writings/pv/a-disambiguation-of-horizontal-single-axis-tracking-algorithms.md)
