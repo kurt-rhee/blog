@@ -67,9 +67,58 @@ Now it is very apparent that something is happening at this site.  Let's say tha
 Oh and by the way you don't necessarily need a performance index here though I think it is probably the easiest and best tool to use.  In the right hands a performance ratio, temperature corrected performance ratio, a regression model or a ML model would work okay.\
 \
 I personally like performance index because I find performance ratio's hard to understand without having a lot of experience with the site and some regression / ML models bake in the site's past performance into the model.   If the site has performed correctly less than it has performed badly, then the model expects poor performance, which is kind of  like a machine form of  "learned helplessness."\
+\
+But, if you have worked on the operational side before, you know that sometimes we don't get the drawing set or the original model to work with, and are often given a large portfolio of projects to monitor.  If you working on hundreds of distributed or commercial sites, making a performance model for each one just isn't practical.  \
 
 
 <figure><img src="../../.gitbook/assets/image (34).png" alt=""><figcaption><p>Orienting ourselves again</p></figcaption></figure>
 
 ### Going Deeper
 
+As we try to determine what is going wrong with the project, there are a few root causes that are easy to rule out.   Let's go through some of them quickly here:\
+
+
+
+
+* Trackers aren't stuck, we would be able to tell in the meter power graph. &#x20;
+  * The evening or morning production would be higher if they were stuck east or west.
+  * It would look like a fixed tilt single humped graph if they were stuck in the middle.
+* Soiling looks minimal
+  * ![](<../../.gitbook/assets/image (36).png>)
+
+What about the inverters?  Are any of them offline?\
+
+
+<figure><img src="../../.gitbook/assets/image (37).png" alt=""><figcaption><p>Real Time Inverter Output at 12:00 P.M. at Hidden Mesa</p></figcaption></figure>
+
+Note that the y-axis has been truncated.  I'll tell you that 16 is offline and 02 and 12 are under-performing seriously.  But what about 19?  It looks lower than its neighbor 18.
+
+<figure><img src="../../.gitbook/assets/image (38).png" alt=""><figcaption><p>Same graph but normalized by DC Input</p></figcaption></figure>
+
+Okay actually, 19 is fine when normalized.  This sort of normalization is even more apparent at the combiner level.\
+\
+
+
+<figure><img src="../../.gitbook/assets/image (39).png" alt=""><figcaption><p>Combiner output before and after normalization by installed capacity</p></figcaption></figure>
+
+People who have worked with data at or below the combiner level are probably angry at this point, because unless you have an enlightened EPC and SCADA team, there is no way that this normalization is going to work.  (If you need a recommendation for an EPC that gets this right, I can pass a name along) You see, one of the problems that is happening right now in our industry is that there is not often good communication between the two groups.  \
+\
+The problem goes like this, the EPC team comes in and installs all of the combiners and then buries all of the cables underground.  Then the SCADA team comes through and has no idea what cable goes to which combiner.  They just randomly assign numbers and call it a day.  Each combiner has a different amount of DC capacity installed on it and then the denominators of your normalization function are complete trash.
+
+There are two ways to remedy this.  You can turn off combiners one by one and see which ones go offline in your data stream.  Or you can read your live data stream and re-map the data based off of an algorithm.   As far as I know there are two algorithms for doing this, one by Dr. Joe Ranalli which was presented at PVSC 2024 and another by Proximal's own Rob van Haaren.  \
+\
+
+
+<figure><img src="../../.gitbook/assets/image (40).png" alt=""><figcaption><p>van Haaren, R. (2025). Unscrambling combiner box SCADA tags using time series data. In Proceedings of the Photovoltaic Reliability Workshop (PVRW) 2025</p></figcaption></figure>
+
+So, orienting ourselves again, now we are using some pretty specialized tools.  Generally we're comparing the data stream coming off of a device to it's neighbors to see if the device is different in any way.  Sore thumbs and under-performing devices stick out.  Machine Learning tools shine in this layer of analysis.\
+\
+
+
+<figure><img src="../../.gitbook/assets/image (41).png" alt=""><figcaption><p>Very specialized tools required </p></figcaption></figure>
+
+I think this is the point where most available commercial tools stop, at least in 2025.  But I think we can go deeper.  It's actually almost tautological that I think we can go deeper.  Why go work for a startup company in a space if you don't believe that that space is ripe for improvements?\
+\
+So where can we go from here?\
+\
+\
