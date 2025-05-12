@@ -10,6 +10,8 @@ description: >-
 ## Intro
 
 If you were able to attend my talk at PVPMC 2025, this is the long form version of the information presented there.  Feel free to skim to get to the more detailed bits!\
+\
+As always, this blog is painstakingly written by hand without AI because I like writing things and because AI writing isn't fun to read.\
 
 
 ## Too Long Didn't Read
@@ -117,8 +119,68 @@ So, orienting ourselves again, now we are using some pretty specialized tools.  
 
 <figure><img src="../../.gitbook/assets/image (41).png" alt=""><figcaption><p>Very specialized tools required </p></figcaption></figure>
 
-I think this is the point where most available commercial tools stop, at least in 2025.  But I think we can go deeper.  It's actually almost tautological that I think we can go deeper.  Why go work for a startup company in a space if you don't believe that that space is ripe for improvements?\
+I think this is the point where most available commercial tools stop, at least in 2025.  But I think we can go deeper.  It's actually almost tautological that I think we can go deeper.  Why go work for a startup in a space if you don't believe that you can improve the solutions to some of the problems within that space?\
 \
 So where can we go from here?\
 \
+I think we can go pretty far if we could have a unique performance index for each data emitting device in the project.\
 \
+\
+
+
+<figure><img src="../../.gitbook/assets/image (42).png" alt=""><figcaption><p>Where I think we can go</p></figcaption></figure>
+
+There is a reason nobody (as far as I know) has gone here yet.  It's trivial from a performance modeling perspective to run a bunch of models, but it's hard from a software engineering perspective to run as many models as you would have to run to get device level performance models.\
+\
+Imagine this: If you have a 600 MWac project, you'll have about 3000 combiners to model.  If you ran 3000 performance models at a 5 minute interval, that would be 36,000x performance models you would have to run relative to your standard one year of 8760 data at the meter level.\
+\
+Not only would that take along time, it also takes up a lot of computer memory.  A LOT.  Now imagine you have to do this across a fleet of projects, for every combiner, every five minutes.\
+\
+Luckily there are tricks in the field of computer science which can help us.  First off, you can use a faster programming language, and most of the software companies that do performance modeling choose to use relatively fast languages.\
+\
+PVsyst uses object Pascal.\
+PlantPredict and SolarFarmer use C#\
+SAM uses C++
+
+You can also employ the cloud to parallelize all of these calculations across a bunch of different servers.  PlantPredict already does this by creating new servers when a lot of people are using the application.  Proximal takes it a step further and gives each project it's own dedicated modeling server-lette.  \
+\
+The final thing you can do is employ algorithms to increase speed and decrease memory usage.  We figured that we could use a common algorithm to compress all unique inputs to a pvlib function, only run pvlib on the absolute most unique inputs and then decompress the result set over all of the devices.  After all, many PV modules may be at the same angle for instance or have the same soiling amounts.  Plus by leveraging pvlib, all of our users know exactly what code is being run and they can contribute to our model at any time.\
+\
+So we built a custom model chain which compresses and decompresses the inputs and outputs of individual pvlib functions and combines this all into one custom model chain.\
+
+
+<figure><img src="../../.gitbook/assets/image (43).png" alt=""><figcaption><p>Algorithms for Performance Modeling</p></figcaption></figure>
+
+<figure><img src="../../.gitbook/assets/image (44).png" alt=""><figcaption><p>docs.proximal.energy</p></figcaption></figure>
+
+So why go through all of this extra work?  \
+\
+Well, because you get a lot more utility out of your model this way.  You set it up once and reap the rewards over the entire 35 year lifetime of the project.\
+\
+For example, you have x met stations on your site.  Why not use all x met stations worth of data?  Older models only allow you to have one met file per model.  This lets your have a performance index that is responsive to intermittent and moving clouds at the device level.\
+\
+You can also see Geo-spatially what is happening at the site, which helps when coordinating with field personnel.\
+\
+
+
+<figure><img src="../../.gitbook/assets/image (45).png" alt=""><figcaption><p>Geo-spatial performance index</p></figcaption></figure>
+
+You can even sort the results by module families.  Imagine if you have two module series A and module series B on site.  You could separate the performance index by the module family and see if one is performing better or worse than another.  \
+\
+
+
+<figure><img src="../../.gitbook/assets/image (46).png" alt=""><figcaption><p>Module Family Level Performance Index</p></figcaption></figure>
+
+This is all powered by the fact that we can run performance models at any arbitrary level of depth.  If you can go as deep as you want, then filtering and grouping by any metric becomes trivial.  \
+\
+You can even slide and dice by bin class.
+
+<figure><img src="../../.gitbook/assets/image (47).png" alt=""><figcaption><p>Performance Index by Bin Class</p></figcaption></figure>
+
+So what are we left with now.  We have a model that is as transparent as possible because it is literally using pvlib as its engine.  You can set it up once and forget about it.  It makes pretty maps.   I think it is a pretty powerful diagnostic tool and it was relatively simple (6 months-ish?) to build because pvlib is so awesome.  \
+\
+I hope this blog post was interesting for you, it was fun for me to work on.  If you are interested in how any of this works feel free to reach out, I'm happy to help think about how this might apply to your work even if you don't care about using Proximal at all!\
+\
+
+
+<figure><img src="../../.gitbook/assets/image (48).png" alt=""><figcaption><p>Last slide of the PVPMC Presentation for the laughs</p></figcaption></figure>
