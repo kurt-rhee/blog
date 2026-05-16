@@ -68,11 +68,17 @@ $$PR_{clip} = \frac{E_{out}}{\sum_{k} \min \left[ P_{STC} \times \frac{G_k}{G_{S
 * **$P_{AC, limit}$**: The total maximum rated AC output capacity of the plant's inverter system (kW).
 * **$\min[\dots]$**: A mathematical function that selects the smaller of the two values: either the expected unclipped DC power output or the physical maximum AC ceiling of the inverter.
 
+<figure><img src="pr_tc.png" alt=""><figcaption>Figure 6:  PR_tc is added in green.  PR_tc for the day is 0.7407</figcaption></figure>
+
 ## What's Next?
 
 There are still more non-linearities in the system that we could account for.  We could come up with an equation which takes into account incidence angle modifier, shading, inverter efficiency, spectral correction, etc. We could call it the **PRtccciamcsciecsc** for *Temperature Corrected, Clipping Corrected, IAM corrected, Shading Corrected, Inverter Efficiency Corrected, Spectral Corrected Performance Ratio™.*
 
 But the thing is, smart people have already come up with those equations, they just put them into a performance model. And when you take energy as the numerator and a performance model as the denominator you get (you guessed it) an Energy Performance Index.
+
+<figure><img src="expected.png" alt=""><figcaption>Figure 6:  PR_tc is added in green.  PR_tc for the day is 0.7407</figcaption></figure>
+
+<figure><img src="epi.png" alt=""><figcaption>Figure 6:  PR_tc is added in green.  PR_tc for the day is 0.7407</figcaption></figure>
 
 
 ---
