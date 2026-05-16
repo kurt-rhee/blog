@@ -85,14 +85,7 @@
                            for="{{ subsection.title | slugify }}">{{ subsection.title }}</label>
 
                     <ul class="subtree">
-                        {% set pages_with_dates = [] %}
-                        {% for page in subsection.pages %}
-                            {% set date = page.date | default(default="1970-01-01") %}
-                            {% set_global pages_with_dates = pages_with_dates + [{ "page": page, "date": date }] %}
-                        {% endfor %}
-                        {% set sorted_pages = pages_with_dates | sort(attribute="date", reverse=true) %}
-                        {% for item in sorted_pages %}
-                        {% set page = item.page %}
+                        {% for page in subsection.pages -%}
                             <li {% if current_path_safe == page.path %}class="active"{% endif %}>
                                 <a href="{{ page.permalink | safe }}{{ _ugly_url }}">{{ page.title }}</a>
                             </li>
