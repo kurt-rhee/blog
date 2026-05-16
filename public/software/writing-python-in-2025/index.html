@@ -1,0 +1,175 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="https://kurt-rhee.github.io/main.css?h=fe258af709b80fdaf57e">
+    <meta name="generator" content="Zola">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+    <title> Kurt Rhee | Writing Python in 2025 </title>
+    <script>
+        window.MathJax = {
+            tex: {
+                inlineMath: [['$', '$'], ['\\(', '\\)']],
+                displayMath: [['$$', '$$'], ['\\[', '\\]']]
+            }
+        };
+        </script>
+        <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js" async></script>
+    </head>
+<body>
+
+<main>
+    
+    
+        <nav>
+            <a href="https:&#x2F;&#x2F;kurt-rhee.github.io">
+                        <img src="https://kurt-rhee.github.io/logo.svg" alt="logo"/>
+                    </a>
+                <button onclick="burger()" id="mobile" class="ms-Icon--GlobalNavButton" aria-label="Toggle navigation"></button>
+            <div id="trees">
+                <input class="tree-toggle" type="checkbox" id="product"
+                           />
+                    <label class="tree-toggle-label"
+                           for="product">Product</label>
+
+                    <ul class="subtree">
+                        <li >
+                                <a href="https://kurt-rhee.github.io/product/product-for-engineers/">Product for Engineers</a>
+                            </li>
+
+                            </ul>
+                <input class="tree-toggle" type="checkbox" id="software"
+                           checked/>
+                    <label class="tree-toggle-label"
+                           for="software">Software</label>
+
+                    <ul class="subtree">
+                        <li >
+                                <a href="https://kurt-rhee.github.io/software/rust-for-scientific-software-development/">Rust for Scientific Software Development</a>
+                            </li>
+
+                            <li >
+                                <a href="https://kurt-rhee.github.io/software/writing-python-in-2024/">Writing Python in 2024</a>
+                            </li>
+
+                            <li class="active">
+                                <a href="https://kurt-rhee.github.io/software/writing-python-in-2025/">Writing Python in 2025</a>
+                            </li>
+
+                            
+                                    
+                                    
+                                        <ul id="toc">
+                                            <li><a href="
+                                                        https://kurt-rhee.github.io/software/writing-python-in-2025/#writing-python-in-2025">Writing Python in 2025</a>
+                                                    <ul>
+                                                            <li>
+                                                                    <a href="https://kurt-rhee.github.io/software/writing-python-in-2025/#intro">Intro</a>
+                                                                </li>
+                                                            <li>
+                                                                    <a href="https://kurt-rhee.github.io/software/writing-python-in-2025/#tools">Tools</a>
+                                                                </li>
+                                                            </ul>
+                                                    </li>
+                                            </ul>
+                                    <li >
+                                <a href="https://kurt-rhee.github.io/software/chernobyl-and-software-engineering/">Chernobyl and Software Engineering</a>
+                            </li>
+
+                            </ul>
+                <input class="tree-toggle" type="checkbox" id="pv"
+                           />
+                    <label class="tree-toggle-label"
+                           for="pv">PV</label>
+
+                    <ul class="subtree">
+                        <li >
+                                <a href="https://kurt-rhee.github.io/pv/modeling-operating-pv-assets/">Modeling Operating PV Assets</a>
+                            </li>
+
+                            <li >
+                                <a href="https://kurt-rhee.github.io/pv/pr-vs-epi/">PR vs. EPI</a>
+                            </li>
+
+                            <li >
+                                <a href="https://kurt-rhee.github.io/pv/shade-shape-calculation-algorithms/">Shade Shape Calculation Algorithms</a>
+                            </li>
+
+                            <li >
+                                <a href="https://kurt-rhee.github.io/pv/so-you-want-to-be-a-pv-performance-engineer/">So You Want to be a PV Performance Engineer</a>
+                            </li>
+
+                            <li >
+                                <a href="https://kurt-rhee.github.io/pv/a-disambiguation-of-horizontal-single-axis-tracking-algorithms/">A Disambiguation of Horizontal Single Axis Tracking Algorithms</a>
+                            </li>
+
+                            <li >
+                                <a href="https://kurt-rhee.github.io/pv/a-primer-on-retrotransposition/">A Primer on RetroTransposition</a>
+                            </li>
+
+                            <li >
+                                <a href="https://kurt-rhee.github.io/pv/how-to-contribute-to-pvlib/">How to Contribute to PVLIB</a>
+                            </li>
+
+                            <li >
+                                <a href="https://kurt-rhee.github.io/pv/a-primer-on-electrical-mismatch/">A Primer on Electrical Mismatch</a>
+                            </li>
+
+                            </ul>
+                </div>
+        </nav>
+    <article>
+
+        <div id="on_right">
+                <span id="search-ico" class="ms-Icon--Search"></span>
+            </div>
+            <div class="search-container">
+                <input id="search" type="search" placeholder="Search as you type...">
+                <div class="search-results">
+                    <div class="search-results__header"></div>
+                    <ul class="search-results__items"></ul>
+                </div>
+            </div>
+        <div id="wrap">
+            
+        <h1 id="writing-python-in-2025">Writing Python in 2025</h1>
+<h2 id="intro">Intro</h2>
+<p>It's been a while since I've written a blog post.  My wife and I had our first kid not too long ago and it has been a whirlwind of activity.  But I'm back at work now and trying to be as effective as possible in as little time as possible.  I hope these tools can help you as much as they are helping me right now (and I need all the help I can get, so feel free to message me with any tips and tricks you think might be useful).</p>
+<p><br />
+\</p>
+<h2 id="tools">Tools</h2>
+<h3 id="uv">UV</h3>
+<p>I recommended this last year in Writing Python in 2024, and the recommendation still applies.  It's really fast, lets you separate dev depedencies from production ones, and it is really good at untangling dependency hairballs.<br />
+\</p>
+<h3 id="ruff">Ruff</h3>
+<p>Ruff is by the same company (<a rel="external" href="https://astral.sh/">astral</a>) that makes uv.  It's a really fast linter/formatter that autofixes all the formatting in your code base.  One of the main benefits of this is that PR reviewers don't need to waste time looking at git diffs between files that only have cosmetic formatting differences.</p>
+<h3 id="pre-commit">Pre-commit</h3>
+<p>Pre-commit is a python package that can run linters like ruff before every commit, but it can also run arbitrary python code.  One of our requirements in our API at proximal is to use the * parameter inside of function definitions so that keyword arguments need to be explicitly named in the function call.  I wrote a pre-commit hook to check that we haven't forgotten to do this to cut down in PR review cycle time. (Pro-tip, Claude is really good at writing pre-commit hooks if you need a custom one).<br />
+\</p>
+<h3 id="zed">Zed</h3>
+<p>I also recommended Zed last year, but this year i'm using it differently.  I've enabled vim motions which allow me to use my mouse less.  I noticed that my right shoulder was getting very tense and sore on days when I had to go back and forth a lot and my physical therapist wife helped me by suggesting I keep my arms shoulder width while working as much as possible.  Using the mouse moves my right arm out of this position and causes my shoulder pain.  Since switching to vim motions and a split keyboard at shoulder width I haven't had any shoulder pain.\</p>
+<h3 id="lazygit">LazyGit</h3>
+<p>In line with the vim motions, lazygit has made it so that I don't have to reach for my mouse when running the git commit, git push workflow and also removes a lot of the boilerplate typing you would have to do if you wanted to run it from the command line.  Zed has it's own git commit window that has keyboard shortcuts, but lazygit is more fully featured and lets you tag commits, create new branches, etc.\</p>
+<h3 id="simulation-file-naming">Simulation File Naming</h3>
+<figure><img src="image (31).png" alt=""><figcaption></figcaption></figure>
+<p>I have a new file structure for simulation code.  In each folder I name my overall controller file c_placeholder.py and then all of the steps in that simulation s01_placeholder.py.  The controller just calls all the steps in order and all of my actual logic is in the steps.  This keeps all my code organized into the order that the code is actually called.  Of course, not all code benefits from being organized this way, but when it does it is really useful for being able to understand the logic of simulation code quickly.<br />
+<br />
+I also wrote a script to add a number to the steps so that I can arbitrarily add new steps in the middle of a series of them.</p>
+<p>\</p>
+<h3 id="diff-checker">Diff Checker</h3>
+<figure><img src="image.png" alt=""><figcaption></figcaption></figure>
+<p><a rel="external" href="https://www.diffchecker.com/">Diff checker</a> allows you to check requirements.txt files line by line, character by character to see the differences.  I don't use this a lot, but it is really useful if you are porting a legacy project over to uv.</p>
+
+    
+        </div>
+
+    </article>
+</main>
+
+
+    <script type="text/javascript" src="https://kurt-rhee.github.io/elasticlunr.min.js" defer></script>
+    <script type="text/javascript" src="https://kurt-rhee.github.io/search_index.en.js?h=1b5bdeb80dcb61cbeb4a" defer></script>
+<script type="text/javascript" src="https://kurt-rhee.github.io/js.js?h=4dc92bffd1cd35c33565" defer></script>
+
+</body>
+</html>

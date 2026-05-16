@@ -1,0 +1,3 @@
+[tasks.deploy]
+description = "Serve the site"
+run = "zola serve"

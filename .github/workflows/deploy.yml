@@ -1,0 +1,21 @@
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build and Deploy
+        uses: shalzz/zola-deploy-action@v0.22.1
+        with:
+          args: --build
+          config: zola.toml
+          zola-version: 22.1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_PAGES: ${{ secrets.GITHUB_PAGES }}

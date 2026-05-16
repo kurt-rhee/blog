@@ -1,0 +1,214 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="https://kurt-rhee.github.io/main.css?h=fe258af709b80fdaf57e">
+    <meta name="generator" content="Zola">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+    <title> Kurt Rhee | PR vs. EPI </title>
+    <script>
+        window.MathJax = {
+            tex: {
+                inlineMath: [['$', '$'], ['\\(', '\\)']],
+                displayMath: [['$$', '$$'], ['\\[', '\\]']]
+            }
+        };
+        </script>
+        <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js" async></script>
+    </head>
+<body>
+
+<main>
+    
+    
+        <nav>
+            <a href="https:&#x2F;&#x2F;kurt-rhee.github.io">
+                        <img src="https://kurt-rhee.github.io/logo.svg" alt="logo"/>
+                    </a>
+                <button onclick="burger()" id="mobile" class="ms-Icon--GlobalNavButton" aria-label="Toggle navigation"></button>
+            <div id="trees">
+                <input class="tree-toggle" type="checkbox" id="product"
+                           />
+                    <label class="tree-toggle-label"
+                           for="product">Product</label>
+
+                    <ul class="subtree">
+                        <li >
+                                <a href="https://kurt-rhee.github.io/product/product-for-engineers/">Product for Engineers</a>
+                            </li>
+
+                            </ul>
+                <input class="tree-toggle" type="checkbox" id="software"
+                           />
+                    <label class="tree-toggle-label"
+                           for="software">Software</label>
+
+                    <ul class="subtree">
+                        <li >
+                                <a href="https://kurt-rhee.github.io/software/rust-for-scientific-software-development/">Rust for Scientific Software Development</a>
+                            </li>
+
+                            <li >
+                                <a href="https://kurt-rhee.github.io/software/writing-python-in-2024/">Writing Python in 2024</a>
+                            </li>
+
+                            <li >
+                                <a href="https://kurt-rhee.github.io/software/writing-python-in-2025/">Writing Python in 2025</a>
+                            </li>
+
+                            <li >
+                                <a href="https://kurt-rhee.github.io/software/chernobyl-and-software-engineering/">Chernobyl and Software Engineering</a>
+                            </li>
+
+                            </ul>
+                <input class="tree-toggle" type="checkbox" id="pv"
+                           checked/>
+                    <label class="tree-toggle-label"
+                           for="pv">PV</label>
+
+                    <ul class="subtree">
+                        <li >
+                                <a href="https://kurt-rhee.github.io/pv/modeling-operating-pv-assets/">Modeling Operating PV Assets</a>
+                            </li>
+
+                            <li class="active">
+                                <a href="https://kurt-rhee.github.io/pv/pr-vs-epi/">PR vs. EPI</a>
+                            </li>
+
+                            
+                                    
+                                    
+                                        <ul id="toc">
+                                            <li><a href="
+                                                        https://kurt-rhee.github.io/pv/pr-vs-epi/#performance-ratio-vs-energy-performance-index">Performance Ratio vs. Energy Performance Index</a>
+                                                    <ul>
+                                                            <li>
+                                                                    <a href="https://kurt-rhee.github.io/pv/pr-vs-epi/#caveat">Caveat</a>
+                                                                </li>
+                                                            <li>
+                                                                    <a href="https://kurt-rhee.github.io/pv/pr-vs-epi/#motivation">Motivation</a>
+                                                                </li>
+                                                            <li>
+                                                                    <a href="https://kurt-rhee.github.io/pv/pr-vs-epi/#starting-from-scratch">Starting from Scratch</a>
+                                                                </li>
+                                                            <li>
+                                                                    <a href="https://kurt-rhee.github.io/pv/pr-vs-epi/#an-example">An Example</a>
+                                                                </li>
+                                                            <li>
+                                                                    <a href="https://kurt-rhee.github.io/pv/pr-vs-epi/#bandaid-1">Bandaid #1</a>
+                                                                </li>
+                                                            <li>
+                                                                    <a href="https://kurt-rhee.github.io/pv/pr-vs-epi/#bandaid-2">Bandaid #2</a>
+                                                                </li>
+                                                            <li>
+                                                                    <a href="https://kurt-rhee.github.io/pv/pr-vs-epi/#what-s-next">What&#x27;s Next?</a>
+                                                                </li>
+                                                            <li>
+                                                                    <a href="https://kurt-rhee.github.io/pv/pr-vs-epi/#references">References</a>
+                                                                </li>
+                                                            </ul>
+                                                    </li>
+                                            </ul>
+                                    <li >
+                                <a href="https://kurt-rhee.github.io/pv/shade-shape-calculation-algorithms/">Shade Shape Calculation Algorithms</a>
+                            </li>
+
+                            <li >
+                                <a href="https://kurt-rhee.github.io/pv/so-you-want-to-be-a-pv-performance-engineer/">So You Want to be a PV Performance Engineer</a>
+                            </li>
+
+                            <li >
+                                <a href="https://kurt-rhee.github.io/pv/a-disambiguation-of-horizontal-single-axis-tracking-algorithms/">A Disambiguation of Horizontal Single Axis Tracking Algorithms</a>
+                            </li>
+
+                            <li >
+                                <a href="https://kurt-rhee.github.io/pv/a-primer-on-retrotransposition/">A Primer on RetroTransposition</a>
+                            </li>
+
+                            <li >
+                                <a href="https://kurt-rhee.github.io/pv/how-to-contribute-to-pvlib/">How to Contribute to PVLIB</a>
+                            </li>
+
+                            <li >
+                                <a href="https://kurt-rhee.github.io/pv/a-primer-on-electrical-mismatch/">A Primer on Electrical Mismatch</a>
+                            </li>
+
+                            </ul>
+                </div>
+        </nav>
+    <article>
+
+        <div id="on_right">
+                <span id="search-ico" class="ms-Icon--Search"></span>
+            </div>
+            <div class="search-container">
+                <input id="search" type="search" placeholder="Search as you type...">
+                <div class="search-results">
+                    <div class="search-results__header"></div>
+                    <ul class="search-results__items"></ul>
+                </div>
+            </div>
+        <div id="wrap">
+            
+        <h1 id="performance-ratio-vs-energy-performance-index">Performance Ratio vs. Energy Performance Index</h1>
+<figure><img src="bandaids.jpeg" alt=""><figcaption>PRcc is a bandaid (Also, AI generated images have improved so much looking through the history of this blog)</figcaption></figure>
+<h2 id="caveat">Caveat</h2>
+<p>At the time of writing, I work for a software company which heavily favors EPI over PR as a performance metric. This one is pretty straight forward though and I think most of the industry would agree with me.</p>
+<h2 id="motivation">Motivation</h2>
+<p>Kevin Anderson gave a talk at PVPMC 2026 which advocates for the use of Energy Performance Index (EPI) over Performance Ratio (PR) [1].  The premise of the talk is basically that PR and all of it's children are not as good as energy performance index because they don't account for non-linear factors in solar PV performance. This blog post is meant to be an addendum to the talk.  If you didn't get a chance to attend, be sure to check it out once the conference proceedings are released.</p>
+<h2 id="starting-from-scratch">Starting from Scratch</h2>
+<p>Okay, so lets start with PR.  It's a simple calculation with basically three terms.  The numerator represents the amount of energy exported.  The denominator is how much irradiance there was, scaled by the nominal capacity of the system.</p>
+<p>$$PR = \frac{E_{out}}{P_{STC} \times \left( \frac{H_i}{G_{STC}} \right)}$$</p>
+<h3 id="variables">Variables</h3>
+<ul>
+<li><strong>$E_{out}$</strong>: Total measured AC energy output over the reporting period (kWh).</li>
+<li><strong>$P_{STC}$</strong>: Total nominal DC nameplate capacity of the PV array under STC (kWp).</li>
+<li><strong>$H_i$</strong>: Total accumulated plane-of-array (POA) solar irradiation over the period ($\text{kWh/m}^2$).</li>
+<li><strong>$G_{STC}$</strong>: Reference solar irradiance at STC ($1\text{ kW/m}^2$ or $1000\text{ W/m}^2$).</li>
+</ul>
+<h2 id="an-example">An Example</h2>
+<p>So what does it look like?  Here is a day's worth of data at a real site which has real data from Proximal's fleet.  I've anonymized the name and the data to make the actual project unrecognizable.</p>
+<figure><img src="power.png" alt=""><figcaption>Figure 2:  Here is the power at the site</figcaption></figure>
+<figure><img src="poa.png" alt=""><figcaption>Figure 3:  It is a clear sky day</figcaption></figure>
+<figure><img src="pr.png" alt=""><figcaption>Figure 4:  PR for the day is 0.7174</figcaption></figure>
+<p>So what does that tell us?  Is a performance ratio (PR) of 0.7174 good?  Is it bad?  Is this system performing as it should be?  I notice that the curve of PR stays pretty level over the middle of the day but in the mornings and the afternoons it dips heavily.  Is that bad?  The shape of the POA curve above is definitely more rounded in the beginning and end of the day relative to the output energy curve.  If we expected the output energy to vary linearly with increasing irradiance then we would expect the curves to have similar shapes and therefore we would expect the PR to stay flat.</p>
+<p>Looking at the PR curve, what we know so far is that we are losing a little over 20% of our expected performance if we expected a linear response to irradiance in the middle of the day, and a lot more than that at the beginnings and ends of the day.  Is 20% a reasonable loss relative to linear reponse in the middle of the day?  I like to think that I am a decently proficient performance modeler and to be honest, I'm not quite sure if that is good or bad.</p>
+<p>Well, we know that temperature affects the output of a solar module, not only irradiance, so lets try correcting for that next, maybe the steep drops at the beginning and end of the day will go away.</p>
+<h2 id="bandaid-1">Bandaid #1</h2>
+<p>Here is the equation for the temperature corrected performance ratio.  Basically we add a temperature correction term which scales the expected amount downwards if the cell temperature goes above 25 degrees Celsius (Standard Test Conditions).</p>
+<p>$$PR_{temp} = \frac{E_{out}}{\sum_{k} \left[ P_{STC} \times \frac{G_k}{G_{STC}} \times \left( 1 + \gamma \cdot (T_{cell, k} - 25) \right) \times \Delta t_k \right]}$$</p>
+<h3 id="variables-1">Variables</h3>
+<ul>
+<li><strong>$G_k$</strong>: Measured plane-of-array (POA) solar irradiance at time-step $k$ ($\text{W/m}^2$).</li>
+<li><strong>$\gamma$</strong>: Temperature coefficient of power for the specific PV module ($%/^\circ\text{C}$ or $1/^\circ\text{C}$, which is a negative value).</li>
+<li><strong>$T_{cell, k}$</strong>: Measured or modeled PV cell/module temperature at time-step $k$ ($^\circ\text{C}$).</li>
+<li><strong>$\Delta t_k$</strong>: The duration of the recording time-step $k$ expressed in hours (e.g., $0.25$ for 15-minute intervals).</li>
+</ul>
+<figure><img src="pr_tc.png" alt=""><figcaption>Figure 6:  PR_tc is added in green.  PR_tc for the day is 0.7407</figcaption></figure>
+<h2 id="bandaid-2">Bandaid #2</h2>
+<p>$$PR_{clip} = \frac{E_{out}}{\sum_{k} \min \left[ P_{STC} \times \frac{G_k}{G_{STC}} \times \left( 1 + \gamma \cdot (T_{cell, k} - 25) \right) , P_{AC, limit} \right] \times \Delta t_k}$$</p>
+<h3 id="variables-2">Variables</h3>
+<ul>
+<li><strong>$P_{AC, limit}$</strong>: The total maximum rated AC output capacity of the plant's inverter system (kW).</li>
+<li><strong>$\min[\dots]$</strong>: A mathematical function that selects the smaller of the two values: either the expected unclipped DC power output or the physical maximum AC ceiling of the inverter.</li>
+</ul>
+<h2 id="what-s-next">What's Next?</h2>
+<p>There are still more non-linearities in the system that we could account for.  We could come up with an equation which takes into account incidence angle modifier, shading, inverter efficiency, spectral correction, etc. We could call it the <strong>PRtccciamcsciecsc</strong> for <em>Temperature Corrected, Clipping Corrected, IAM corrected, Shading Corrected, Inverter Efficiency Corrected, Spectral Corrected Performance Ratio™.</em></p>
+<p>But the thing is, smart people have already come up with those equations, they just put them into a performance model. And when you take energy as the numerator and a performance model as the denominator you get (you guessed it) an Energy Performance Index.</p>
+<hr />
+<h2 id="references">References</h2>
+<p><a rel="external" href="https://pvpmc.sandia.gov/workshops-and-pubs/workshops/">1. PVPMC 2026</a></p>
+
+    
+        </div>
+
+    </article>
+</main>
+
+
+    <script type="text/javascript" src="https://kurt-rhee.github.io/elasticlunr.min.js" defer></script>
+    <script type="text/javascript" src="https://kurt-rhee.github.io/search_index.en.js?h=1b5bdeb80dcb61cbeb4a" defer></script>
+<script type="text/javascript" src="https://kurt-rhee.github.io/js.js?h=4dc92bffd1cd35c33565" defer></script>
+
+</body>
+</html>

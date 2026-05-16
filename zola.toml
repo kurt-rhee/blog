@@ -1,0 +1,18 @@
+base_url = "https://kurt-rhee.github.io"
+title = "Kurt Rhee"
+theme = "zola_easydocs_theme"
+compile_sass = true
+build_search_index = true
+generate_feeds = true
+
+[markdown]
+
+[markdown.highlighting]
+theme = "github-light"
+
+[extra]
+logo = "logo.svg"
+math = true
+easydocs_logo_always_clickable = true
+easydocs_uglyurls = false
+easydocs_heading_threshold = 5

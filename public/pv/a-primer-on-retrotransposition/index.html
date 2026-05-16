@@ -1,0 +1,186 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="https://kurt-rhee.github.io/main.css?h=fe258af709b80fdaf57e">
+    <meta name="generator" content="Zola">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+    <title> Kurt Rhee | A Primer on RetroTransposition </title>
+    <script>
+        window.MathJax = {
+            tex: {
+                inlineMath: [['$', '$'], ['\\(', '\\)']],
+                displayMath: [['$$', '$$'], ['\\[', '\\]']]
+            }
+        };
+        </script>
+        <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js" async></script>
+    </head>
+<body>
+
+<main>
+    
+    
+        <nav>
+            <a href="https:&#x2F;&#x2F;kurt-rhee.github.io">
+                        <img src="https://kurt-rhee.github.io/logo.svg" alt="logo"/>
+                    </a>
+                <button onclick="burger()" id="mobile" class="ms-Icon--GlobalNavButton" aria-label="Toggle navigation"></button>
+            <div id="trees">
+                <input class="tree-toggle" type="checkbox" id="product"
+                           />
+                    <label class="tree-toggle-label"
+                           for="product">Product</label>
+
+                    <ul class="subtree">
+                        <li >
+                                <a href="https://kurt-rhee.github.io/product/product-for-engineers/">Product for Engineers</a>
+                            </li>
+
+                            </ul>
+                <input class="tree-toggle" type="checkbox" id="software"
+                           />
+                    <label class="tree-toggle-label"
+                           for="software">Software</label>
+
+                    <ul class="subtree">
+                        <li >
+                                <a href="https://kurt-rhee.github.io/software/rust-for-scientific-software-development/">Rust for Scientific Software Development</a>
+                            </li>
+
+                            <li >
+                                <a href="https://kurt-rhee.github.io/software/writing-python-in-2024/">Writing Python in 2024</a>
+                            </li>
+
+                            <li >
+                                <a href="https://kurt-rhee.github.io/software/writing-python-in-2025/">Writing Python in 2025</a>
+                            </li>
+
+                            <li >
+                                <a href="https://kurt-rhee.github.io/software/chernobyl-and-software-engineering/">Chernobyl and Software Engineering</a>
+                            </li>
+
+                            </ul>
+                <input class="tree-toggle" type="checkbox" id="pv"
+                           checked/>
+                    <label class="tree-toggle-label"
+                           for="pv">PV</label>
+
+                    <ul class="subtree">
+                        <li >
+                                <a href="https://kurt-rhee.github.io/pv/modeling-operating-pv-assets/">Modeling Operating PV Assets</a>
+                            </li>
+
+                            <li >
+                                <a href="https://kurt-rhee.github.io/pv/pr-vs-epi/">PR vs. EPI</a>
+                            </li>
+
+                            <li >
+                                <a href="https://kurt-rhee.github.io/pv/shade-shape-calculation-algorithms/">Shade Shape Calculation Algorithms</a>
+                            </li>
+
+                            <li >
+                                <a href="https://kurt-rhee.github.io/pv/so-you-want-to-be-a-pv-performance-engineer/">So You Want to be a PV Performance Engineer</a>
+                            </li>
+
+                            <li >
+                                <a href="https://kurt-rhee.github.io/pv/a-disambiguation-of-horizontal-single-axis-tracking-algorithms/">A Disambiguation of Horizontal Single Axis Tracking Algorithms</a>
+                            </li>
+
+                            <li class="active">
+                                <a href="https://kurt-rhee.github.io/pv/a-primer-on-retrotransposition/">A Primer on RetroTransposition</a>
+                            </li>
+
+                            
+                                    
+                                    
+                                        <ul id="toc">
+                                            <li><a href="
+                                                        https://kurt-rhee.github.io/pv/a-primer-on-retrotransposition/#a-primer-on-retrotransposition">A Primer on RetroTransposition</a>
+                                                    <ul>
+                                                            <li>
+                                                                    <a href="https://kurt-rhee.github.io/pv/a-primer-on-retrotransposition/#introduction">Introduction</a>
+                                                                </li>
+                                                            <li>
+                                                                    <a href="https://kurt-rhee.github.io/pv/a-primer-on-retrotransposition/#why">Why</a>
+                                                                </li>
+                                                            <li>
+                                                                    <a href="https://kurt-rhee.github.io/pv/a-primer-on-retrotransposition/#caveats">Caveats</a>
+                                                                </li>
+                                                            <li>
+                                                                    <a href="https://kurt-rhee.github.io/pv/a-primer-on-retrotransposition/#conclusion">Conclusion</a>
+                                                                </li>
+                                                            </ul>
+                                                    </li>
+                                            </ul>
+                                    <li >
+                                <a href="https://kurt-rhee.github.io/pv/how-to-contribute-to-pvlib/">How to Contribute to PVLIB</a>
+                            </li>
+
+                            <li >
+                                <a href="https://kurt-rhee.github.io/pv/a-primer-on-electrical-mismatch/">A Primer on Electrical Mismatch</a>
+                            </li>
+
+                            </ul>
+                </div>
+        </nav>
+    <article>
+
+        <div id="on_right">
+                <span id="search-ico" class="ms-Icon--Search"></span>
+            </div>
+            <div class="search-container">
+                <input id="search" type="search" placeholder="Search as you type...">
+                <div class="search-results">
+                    <div class="search-results__header"></div>
+                    <ul class="search-results__items"></ul>
+                </div>
+            </div>
+        <div id="wrap">
+            
+        <h1 id="a-primer-on-retrotransposition">A Primer on RetroTransposition</h1>
+<figure><img src="image (1).png" alt=""><figcaption><p> <strong>Figure 1:</strong> A rendition of the sun hitting some solar panels generated by Gemini</p></figcaption></figure>
+<h2 id="introduction">Introduction</h2>
+<p>Photovoltaic performance models which can accept plane of array irradiance (POAI) or global transposed irradiance (GTI) do not use the input POAI data directly. Instead, the POAI is "retro-transposed" into horizontal components (GHI, DHI, DNI) and then re-transposed into the plane of array. Some may wonder, why go through this extra series of steps if the POAI data is readily available?</p>
+<h2 id="why">Why</h2>
+<p>The main reason for retro-transposing the POAI is that measured POAI does not contain the irradiance components needed for some of the models in the performance model chain, namely the diffuse and direct irradiance in the plane of array. These values are necessary in order to determine what portion of irradiance is lossed due to:</p>
+<ol>
+<li>The incidence angle lesses in the glass which have both a direct component (1) and a diffuse component (2).</li>
+<li>The shade losses which also have a direct (3) and diffuse (4) component.</li>
+</ol>
+<h2 id="caveats">Caveats</h2>
+<p>Mounting pyranometers in the plane of array configuration is a popular way of reducing the uncertainty introduced by transposition models, but introduces a few uncertainties of its own. For example:</p>
+<ul>
+<li>The plane of array pyranometer on a tracker system may not be aat the correct rotation angle if the tracker goes offline.</li>
+<li>Tracker systems which have different rotation algorithms for individual trackers (3) will not be correct due to the different rotation angles.</li>
+<li>The mounting of the plane of array pyranometer may be influenced by direct or diffuse shading, which would cause the performance model to double count the loss.</li>
+<li>Uncertianty in the retro-transposition model can incorrectly estimate the proportion of diffuse and direct irradiance in the plane of array.</li>
+<li>PV Performance modeling software can possibly use a different retro-transposition algorithm than the transposition algorithm which can introduce confusion.</li>
+<li>If the retro-transposition uses a decomposition model to determine the horizontal components. The effects of allocating the circumsolar portion to direct after decomposition is not well researched.</li>
+</ul>
+<p>Because of these uncertainties (especially the first three), plane of array pyranometers should be treated with extra caution when evaluating operational data. It is my opinion that tracked utility scale PV power plants should have at least 2 pyranometers in the horizontal configuration to fall back on for periods when the plane of array pyranometers are not giving good data. I also believe that diligently siting pyranometers to avoid diffuse and direct shading is important for all utility scale powerplants.</p>
+<h2 id="conclusion">Conclusion</h2>
+<p>Retro-transposition is an often overlooked portion of the PV performance model</p>
+<p><strong>Further reading:</strong></p>
+<ul>
+<li><a rel="external" href="https://www.sciencedirect.com/science/article/pii/S0038092X23007272">GTI Driesse</a></li>
+<li><a rel="external" href="https://pvpmc.sandia.gov/modeling-guide/2-dc-module-iv/effective-irradiance/">PVPMC Effective Irradiance</a></li>
+<li><a rel="external" href="https://pvlib-python.readthedocs.io/en/v0.9.0/generated/pvlib.iam.physical.html">(1) Physical IAM</a></li>
+<li><a rel="external" href="https://pvlib-python.readthedocs.io/en/v0.9.0/generated/pvlib.iam.marion_diffuse.html">(2) Marion Diffuse</a></li>
+<li><a rel="external" href="https://kurt-rhee.github.io/2024/01/19/a-physical-shade-shape-calculation-algorithm">(3) Direct Shading</a></li>
+<li><a rel="external" href="https://pvlib-python.readthedocs.io/en/stable/gallery/shading/plot_passias_diffuse_shading.html">(4) Diffuse Shading</a></li>
+</ul>
+
+    
+        </div>
+
+    </article>
+</main>
+
+
+    <script type="text/javascript" src="https://kurt-rhee.github.io/elasticlunr.min.js" defer></script>
+    <script type="text/javascript" src="https://kurt-rhee.github.io/search_index.en.js?h=1b5bdeb80dcb61cbeb4a" defer></script>
+<script type="text/javascript" src="https://kurt-rhee.github.io/js.js?h=4dc92bffd1cd35c33565" defer></script>
+
+</body>
+</html>
