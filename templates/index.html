@@ -85,7 +85,8 @@
                            for="{{ subsection.title | slugify }}">{{ subsection.title }}</label>
 
                     <ul class="subtree">
-                        {% for page in subsection.pages -%}
+                        {% set sorted_pages = subsection.pages | sort(attribute="date") | reverse %}
+                        {% for page in sorted_pages -%}
                             <li {% if current_path_safe == page.path %}class="active"{% endif %}>
                                 <a href="{{ page.permalink | safe }}{{ _ugly_url }}">{{ page.title }}</a>
                             </li>
