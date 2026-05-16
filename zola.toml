@@ -1,4 +1,4 @@
-base_url = "https://kurt-rhee.github.io"
+base_url = "https://kurt-rhee.github.io/blog"
 title = "Kurt Rhee"
 theme = "zola_easydocs_theme"
 compile_sass = true
