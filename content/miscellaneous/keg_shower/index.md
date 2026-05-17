@@ -1,11 +1,12 @@
 +++
 title = "Keg Shower"
 weight = 10
-aliases = ["writings/miscellaneous/keg-shower"]
+aliases = ["writings/misc/keg-shower"]
 +++
 
 # Keg Shower
 
+<figure><img src="shower.png" alt=""><figcaption>The shower</figcaption></figure>
 
 
 ## Intro
