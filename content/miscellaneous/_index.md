@@ -1,7 +1,7 @@
 +++
 title = "Miscellaneous"
-weight = 10
-sort_by = "weight"
+weight = 40
+sort_by = "title"
 aliases = ["writings/misc"]
 +++
 

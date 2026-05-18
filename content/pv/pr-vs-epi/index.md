@@ -7,7 +7,7 @@ aliases = ["writings/pv/pr-vs-epi"]
 
 # Performance Ratio vs. Energy Performance Index
 
-<figure><img src="bandaids.jpeg" alt=""><figcaption>PRcc is a bandaid (Also, AI generated images have improved so much looking through the history of this blog)</figcaption></figure>
+<figure><img src="bandaids.jpeg" alt=""><figcaption>Figure 1: PRcc is a bandaid (Also, AI generated images have improved so much looking through the history of this blog)</figcaption></figure>
 
 ## Caveat
 
@@ -58,9 +58,13 @@ $$PR_{temp} = \frac{E_{out}}{\sum_{k} \left[ P_{STC} \times \frac{G_k}{G_{STC}} 
 * **$T_{cell, k}$**: Measured or modeled PV cell/module temperature at time-step $k$ ($^\circ\text{C}$).
 * **$\Delta t_k$**: The duration of the recording time-step $k$ expressed in hours (e.g., $0.25$ for 15-minute intervals).
 
-<figure><img src="pr_tc.png" alt=""><figcaption>Figure 6:  PR_tc is added in green.  PR_tc for the day is 0.7407</figcaption></figure>
+<figure><img src="pr_tc.png" alt=""><figcaption>Figure 5:  PR_tc is added in green.  PR_tc for the day is 0.7407</figcaption></figure>
+
+That didn't help at all, well, it did a little bit.  We now know that we aren't losing more than 20 percent in the middle of the day, but I still don't know if this is good or not.  
 
 ## Bandaid #2
+
+Here is the equation for PRtc,cc which adds a clipping compensation term.  This makes it so that we aren't penalized by clipping.  Is this new graph useful?  I think it is.  At least a little bit.  It tells us that we can ignore certain periods where the PRtc,cc is at 1.0 since clipping is occuring.  But how about the other parts of the day?  In the morning and the evening, PRtc,cc still tells us we are highly underperforming relative to irradiance.
 
 $$PR_{clip} = \frac{E_{out}}{\sum_{k} \min \left[ P_{STC} \times \frac{G_k}{G_{STC}} \times \left( 1 + \gamma \cdot (T_{cell, k} - 25) \right) , P_{AC, limit} \right] \times \Delta t_k}$$
 
@@ -68,18 +72,26 @@ $$PR_{clip} = \frac{E_{out}}{\sum_{k} \min \left[ P_{STC} \times \frac{G_k}{G_{S
 * **$P_{AC, limit}$**: The total maximum rated AC output capacity of the plant's inverter system (kW).
 * **$\min[\dots]$**: A mathematical function that selects the smaller of the two values: either the expected unclipped DC power output or the physical maximum AC ceiling of the inverter.
 
-<figure><img src="pr_tc.png" alt=""><figcaption>Figure 6:  PR_tc is added in green.  PR_tc for the day is 0.7407</figcaption></figure>
+<figure><img src="pr_cc.png" alt=""><figcaption>Figure 6:  PRtc,cc is added in green.  PRtc,cc for the day is 0.8948</figcaption></figure>
+
+What does a PRtc,cc of ~0.895 mean?  Like the other PR numbers I can only understand the number if its relative to something else, like the PRtc,cc of another day, or the PRtc,cc of one inverter relative to the next.  But that relativity adds complexity, what if inverter A has a different set of module bin classes to inverter B?  What if the weather in month A is different from month A one year from now?
 
 ## What's Next?
 
-There are still more non-linearities in the system that we could account for.  We could come up with an equation which takes into account incidence angle modifier, shading, inverter efficiency, spectral correction, etc. We could call it the **PRtccciamcsciecsc** for *Temperature Corrected, Clipping Corrected, IAM corrected, Shading Corrected, Inverter Efficiency Corrected, Spectral Corrected Performance Ratio™.*
+There are still more non-linearities in the system that we could account for.  We could come up with an equation which takes into account incidence angle modifier, shading, inverter efficiency, spectral correction, etc. We could call it the **PRtc,cc,iamc,sc,iec,sc** for *Temperature Corrected, Clipping Corrected, IAM corrected, Shading Corrected, Inverter Efficiency Corrected, Spectral Corrected Performance Ratio™.* And we can add even more terms.
 
 But the thing is, smart people have already come up with those equations, they just put them into a performance model. And when you take energy as the numerator and a performance model as the denominator you get (you guessed it) an Energy Performance Index.
 
-<figure><img src="expected.png" alt=""><figcaption>Figure 6:  PR_tc is added in green.  PR_tc for the day is 0.7407</figcaption></figure>
+<figure><img src="expected.png" alt=""><figcaption>Figure 6:  Expected Energy added in blue. </figcaption></figure>
 
-<figure><img src="epi.png" alt=""><figcaption>Figure 6:  PR_tc is added in green.  PR_tc for the day is 0.7407</figcaption></figure>
 
+<figure><img src="epi.png" alt=""><figcaption>Figure 6:  EPI shown in dotted orange.  EPI for the day is 0.97</figcaption></figure>
+
+Now these are useful numbers finally.  The energy performance index says that we are underperforming relative to our model by ~3 percent, and we are doing it at the edges of the day.  Why is the EPI so much cleaner than the PR numbers?   Its because the modules are on a horizontal single axis tracking system with no backtracking, the smoothness of the PR lines indicate that they are having a linear response to the shade.  
+
+But, what about the remaining 3%?  I'll give you the answer.  In this particular case the modules are degrading more than the expected model.  That's the benefit of using a model.  The paramters are trace-able, you can correct for all sorts of things, like the different line losses to each inverter and combiner on the site.  
+
+It's 2026, lets not use band-aids, lets fix things at the root level.  Use an energy model.  Any energy model (Except the model that you are probably using right now, you know what I'm talking about).  Upgrade your tools and lets make our operating assets perform how we know they can in the first place.
 
 ---
 

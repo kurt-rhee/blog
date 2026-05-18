@@ -1,7 +1,7 @@
 +++
 title = "PV"
-weight = 30
-sort_by = "weight"
+weight = 10
+sort_by = "title"
 aliases = ["writings/pv"]
 +++
 

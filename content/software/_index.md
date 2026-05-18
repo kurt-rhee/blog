@@ -1,7 +1,7 @@
 +++
 title = "Software"
 weight = 20
-sort_by = "weight"
+sort_by = "title"
 aliases = ["writings/software"]
 +++
 
