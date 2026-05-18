@@ -82,10 +82,10 @@ There are still more non-linearities in the system that we could account for.  W
 
 But the thing is, smart people have already come up with those equations, they just put them into a performance model. And when you take energy as the numerator and a performance model as the denominator you get (you guessed it) an Energy Performance Index.
 
-<figure><img src="expected.png" alt=""><figcaption>Figure 6:  Expected Energy added in blue. </figcaption></figure>
+<figure><img src="expected.png" alt=""><figcaption>Figure 7:  Expected Energy added in blue. </figcaption></figure>
 
 
-<figure><img src="epi.png" alt=""><figcaption>Figure 6:  EPI shown in dotted orange.  EPI for the day is 0.97</figcaption></figure>
+<figure><img src="epi.png" alt=""><figcaption>Figure 8:  EPI shown in dotted orange.  EPI for the day is 0.97</figcaption></figure>
 
 Now these are useful numbers finally.  The energy performance index says that we are underperforming relative to our model by ~3 percent, and we are doing it at the edges of the day.  Why is the EPI so much cleaner than the PR numbers?   Its because the modules are on a horizontal single axis tracking system with no backtracking, the smoothness of the PR lines indicate that they are having a linear response to the shade.  
 
