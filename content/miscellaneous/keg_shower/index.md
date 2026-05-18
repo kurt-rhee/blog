@@ -1,5 +1,5 @@
 +++
-title = "Keg Shower"
+title = "Simple Keg Shower"
 weight = 10
 aliases = ["writings/misc/keg-shower"]
 +++
@@ -11,7 +11,7 @@ aliases = ["writings/misc/keg-shower"]
 
 ## Intro
 
-I'm anti-plastic.  Don't get me wrong, in many cases it is a miracle material which can't easily be replaced with an alternative, but I think that it is mostly an over-used material because companies optimize for "cheap".  I generally prefer durable products, since they create less waste and I get to reduce my mental load over time since I don't have to think about replacing them ever, even if they come at a higher intial cost.  Often this means I buy products that reduce the usage of plastic components.
+I'm anti-plastic.  Don't get me wrong, in many cases it is a miracle material which can't easily be replaced with an alternative, but I think that it is mostly an over-used material because companies optimize for "cheap".  I generally prefer durable (and simple) products, since they create less waste and I get to reduce my mental load over time since I don't have to think about replacing them ever, even if they come at a higher intial cost.  Often this means I buy products that reduce the usage of plastic components.
 
 I also prefer products that don't cause pacific garbage patch levels of environmental catastrophe, that don't support oil companies, and that aren't endocrine disruptors.  
 

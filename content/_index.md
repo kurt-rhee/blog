@@ -3,6 +3,8 @@ title = "About Me"
 sort_by = "weight"
 +++
 
+
+
 # About Me
 
 <figure><img src="Screenshot_20241022_131505.png" alt="" width="360"><figcaption></figcaption></figure>
