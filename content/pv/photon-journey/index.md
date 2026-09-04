@@ -7,12 +7,14 @@ weight = 50
 
 # A Photon's Journey Through a Solar Simulation
 
-A photovoltaic performance model does much more than turn sunlight into an
-energy estimate. It follows a chain of physical calculations from conditions
-above the atmosphere to the power delivered at the grid connection.
+A virtual photon's journey from the sun through a photovoltaic simulation to
+the grid.  
 
 This simulation uses [pvlib](https://pvlib-python.readthedocs.io/) to follow
-that journey from sunlight to grid-delivered electricity.
+that journey from sunlight to grid-delivered electricity.  It uses sensible
+values for each model choice.  It is also a reasonably simple simulation.
+We could make even more steps by introducting 3D shading, terrain aware backtracktracking,
+diffuse irradaince optimization, etc.
 
 {{ photon_journey() }}
 
