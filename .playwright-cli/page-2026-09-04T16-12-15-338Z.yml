@@ -1,0 +1,283 @@
+- main [ref=e2]:
+  - navigation [ref=e3]:
+    - link [ref=e4] [cursor=pointer]:
+      - /url: http://127.0.0.1:1111
+      - img "logo" [ref=e5]
+    - text: 
+    - generic [ref=e6]:
+      - checkbox " PV" [checked] [ref=e7]
+      - generic [ref=e8] [cursor=pointer]:  PV
+      - list [ref=e9]:
+        - listitem [ref=e10]:
+          - text: 
+          - link "A Disambiguation of Horizontal Single Axis Tracking Algorithms" [ref=e11] [cursor=pointer]:
+            - /url: http://127.0.0.1:1111/pv/a-disambiguation-of-horizontal-single-axis-tracking-algorithms/
+        - listitem [ref=e12]:
+          - text: 
+          - link "A Photon's Journey Through a Solar Simulation" [ref=e13] [cursor=pointer]:
+            - /url: http://127.0.0.1:1111/pv/photon-journey/
+        - listitem [ref=e14]:
+          - text: 
+          - link "A Primer on Electrical Mismatch" [ref=e15] [cursor=pointer]:
+            - /url: http://127.0.0.1:1111/pv/a-primer-on-electrical-mismatch/
+        - listitem [ref=e16]:
+          - text: 
+          - link "A Primer on RetroTransposition" [ref=e17] [cursor=pointer]:
+            - /url: http://127.0.0.1:1111/pv/a-primer-on-retrotransposition/
+        - listitem [ref=e18]:
+          - text: 
+          - link "How to Contribute to PVLIB" [ref=e19] [cursor=pointer]:
+            - /url: http://127.0.0.1:1111/pv/how-to-contribute-to-pvlib/
+        - listitem [ref=e20]:
+          - text: 
+          - link "Modeling Operating PV Assets" [ref=e21] [cursor=pointer]:
+            - /url: http://127.0.0.1:1111/pv/modeling-operating-pv-assets/
+        - listitem [ref=e22]:
+          - text: 
+          - link "PR vs. EPI" [ref=e23] [cursor=pointer]:
+            - /url: http://127.0.0.1:1111/pv/pr-vs-epi/
+        - listitem [ref=e24]:
+          - text: 
+          - link "Shade Shape Calculation Algorithms" [ref=e25] [cursor=pointer]:
+            - /url: http://127.0.0.1:1111/pv/shade-shape-calculation-algorithms/
+        - listitem [ref=e26]:
+          - text: 
+          - link "So You Want to be a PV Performance Engineer" [ref=e27] [cursor=pointer]:
+            - /url: http://127.0.0.1:1111/pv/so-you-want-to-be-a-pv-performance-engineer/
+      - checkbox " Software" [ref=e28]
+      - generic [ref=e29] [cursor=pointer]:  Software
+      - list:
+        - listitem [ref=e30]:
+          - text: 
+          - link "Chernobyl and Software Engineering" [ref=e31] [cursor=pointer]:
+            - /url: http://127.0.0.1:1111/software/chernobyl-and-software-engineering/
+        - listitem [ref=e32]:
+          - text: 
+          - link "Rust for Scientific Software Development" [ref=e33] [cursor=pointer]:
+            - /url: http://127.0.0.1:1111/software/rust-for-scientific-software-development/
+        - listitem [ref=e34]:
+          - text: 
+          - link "Writing Python in 2024" [ref=e35] [cursor=pointer]:
+            - /url: http://127.0.0.1:1111/software/writing-python-in-2024/
+        - listitem [ref=e36]:
+          - text: 
+          - link "Writing Python in 2025" [ref=e37] [cursor=pointer]:
+            - /url: http://127.0.0.1:1111/software/writing-python-in-2025/
+      - checkbox " Product" [ref=e38]
+      - generic [ref=e39] [cursor=pointer]:  Product
+      - list:
+        - listitem [ref=e40]:
+          - text: 
+          - link "Product for Engineers" [ref=e41] [cursor=pointer]:
+            - /url: http://127.0.0.1:1111/product/product-for-engineers/
+      - checkbox " Miscellaneous" [ref=e42]
+      - generic [ref=e43] [cursor=pointer]:  Miscellaneous
+      - list:
+        - listitem [ref=e44]:
+          - text: 
+          - link "Simple Keg Shower" [ref=e45] [cursor=pointer]:
+            - /url: http://127.0.0.1:1111/miscellaneous/keg-shower/
+  - article [ref=e46]:
+    - generic [ref=e47]: 
+    - generic [ref=e49]:
+      - heading "A Photon's Journey Through a Solar Simulation" [level=1] [ref=e50]
+      - paragraph [ref=e51]: A photovoltaic performance model does much more than turn sunlight into an energy estimate. It follows a chain of physical calculations from conditions above the atmosphere to the power delivered at the grid connection.
+      - paragraph [ref=e52]:
+        - text: This simulation uses
+        - link "pvlib" [ref=e53] [cursor=pointer]:
+          - /url: https://pvlib-python.readthedocs.io/
+        - text: to follow that journey from sunlight to grid-delivered electricity.
+      - iframe [ref=e55]:
+        - generic [ref=f1e2]:
+          - banner [ref=f1e3]:
+            - generic [ref=f1e4]:
+              - generic [aria-hidden] [ref=f1e5]: ☼
+              - generic [ref=f1e6]:
+                - paragraph [ref=f1e7]: pvlib · solar simulation
+                - heading "A photon’s journey to the grid" [level=1] [ref=f1e8]
+            - generic "Animation controls" [ref=f1e9]:
+              - button "Previous modeling step" [ref=f1e10] [cursor=pointer]: ← Previous
+              - button "Pause" [ref=f1e11] [cursor=pointer]
+              - button "Next modeling step" [ref=f1e12] [cursor=pointer]: Next →
+              - button "Restart" [ref=f1e13] [cursor=pointer]
+              - combobox "Animation speed" [ref=f1e14] [cursor=pointer]:
+                - option "Slow"
+                - option "Normal" [selected]
+                - option "Fast"
+          - main [ref=f1e15]:
+            - region "Animated photon path" [ref=f1e16]:
+              - generic [ref=f1e17]: Meteorology
+              - img "A photon traveling through a pvlib-based solar simulation The path begins at the sun, crosses the atmosphere, strikes a module, becomes direct-current electricity, and travels through inverter, transformer, and grid." [ref=f1e18]:
+                - generic "Model categories" [ref=f1e19]:
+                  - generic [ref=f1e23]: ATMOSPHERE
+                  - generic [ref=f1e24]: SUNLIGHT AND WEATHER
+                  - generic [ref=f1e25]: DC
+                  - generic [ref=f1e26]: MODULE TO INVERTER INPUT
+                  - generic [ref=f1e27]: AC
+                  - generic [ref=f1e28]: INVERTER OUTPUT TO GRID
+                - generic [ref=f1e29]: Sun
+                - generic [ref=f1e35]: Air column
+                - generic [ref=f1e38]: Module
+                - generic [ref=f1e44]: Optics
+                - generic [ref=f1e48]: PV cell
+                - generic [ref=f1e52]: DC wiring
+                - generic [ref=f1e55]:
+                  - generic [ref=f1e58]: Inverter
+                  - generic [ref=f1e60]: AC wiring
+                - generic [ref=f1e61]:
+                  - generic [ref=f1e64]: Transformer
+                  - generic [ref=f1e67]: Grid
+              - generic [aria-hidden] [ref=f1e70]:
+                - generic [ref=f1e71]: photon
+                - generic [ref=f1e73]: electrical energy
+            - complementary [ref=f1e75]:
+              - generic [ref=f1e76]:
+                - generic [ref=f1e77]: 01 / 39
+                - generic [ref=f1e78]: PHOTON
+              - heading "Convert elevation to pressure" [level=2] [ref=f1e79]
+              - paragraph [ref=f1e80]: The atmospheric calculation begins with site elevation. Pressure is estimated from the standard atmosphere so later air-mass and irradiance calculations reflect the thinner air at higher elevations.
+              - generic [ref=f1e81]:
+                - paragraph [ref=f1e82]: Calculation detail · active path
+                - generic [ref=f1e83]:
+                  - generic [ref=f1e84]:
+                    - generic [ref=f1e85]: Method
+                    - generic [ref=f1e86]: pvlib alt2pres
+                  - generic [ref=f1e87]:
+                    - generic [ref=f1e88]: Input
+                    - generic [ref=f1e89]: elevation (m)
+                  - generic [ref=f1e90]:
+                    - generic [ref=f1e91]: Output
+                    - generic [ref=f1e92]: site pressure (Pa)
+              - paragraph [ref=f1e93]: "Function: calc_site_pressure. This value is constant for the simulated site."
+          - contentinfo [ref=f1e94]:
+            - navigation "Journey stages" [ref=f1e96]:
+              - button [ref=f1e97] [cursor=pointer]:
+                - strong [ref=f1e98]: 01 · Meteorology
+                - text: Site pressure
+              - button [ref=f1e99] [cursor=pointer]:
+                - strong [ref=f1e100]: 02 · Meteorology
+                - text: Solar position
+              - button [ref=f1e101] [cursor=pointer]:
+                - strong [ref=f1e102]: 03 · Meteorology
+                - text: Relative air mass
+              - button [ref=f1e103] [cursor=pointer]:
+                - strong [ref=f1e104]: 04 · Meteorology
+                - text: Absolute air mass
+              - button [ref=f1e105] [cursor=pointer]:
+                - strong [ref=f1e106]: 05 · Meteorology
+                - text: Dew point
+              - button [ref=f1e107] [cursor=pointer]:
+                - strong [ref=f1e108]: 06 · Meteorology
+                - text: Water column
+              - button [ref=f1e109] [cursor=pointer]:
+                - strong [ref=f1e110]: 07 · Meteorology
+                - text: Extraterrestrial DNI
+              - button [ref=f1e111] [cursor=pointer]:
+                - strong [ref=f1e112]: 08 · Meteorology
+                - text: Direct irradiance
+              - button [ref=f1e113] [cursor=pointer]:
+                - strong [ref=f1e114]: 09 · Meteorology
+                - text: Diffuse irradiance
+              - button [ref=f1e115] [cursor=pointer]:
+                - strong [ref=f1e116]: 10 · Surface
+                - text: Control choice
+              - button [ref=f1e117] [cursor=pointer]:
+                - strong [ref=f1e118]: 11 · Surface
+                - text: Row pitch
+              - button [ref=f1e119] [cursor=pointer]:
+                - strong [ref=f1e120]: 12 · Surface
+                - text: Surface angles
+              - button [ref=f1e121] [cursor=pointer]:
+                - strong [ref=f1e122]: 13 · Plane of array
+                - text: Reverse transposition
+              - button [ref=f1e123] [cursor=pointer]:
+                - strong [ref=f1e124]: 14 · Plane of array
+                - text: Resource selection
+              - button [ref=f1e125] [cursor=pointer]:
+                - strong [ref=f1e126]: 15 · Plane of array
+                - text: Sky diffuse
+              - button [ref=f1e127] [cursor=pointer]:
+                - strong [ref=f1e128]: 16 · Plane of array
+                - text: Ground diffuse
+              - button [ref=f1e129] [cursor=pointer]:
+                - strong [ref=f1e130]: 17 · Plane of array
+                - text: Beam
+              - button [ref=f1e131] [cursor=pointer]:
+                - strong [ref=f1e132]: 18 · Plane of array
+                - text: Rear irradiance
+              - button [ref=f1e133] [cursor=pointer]:
+                - strong [ref=f1e134]: 19 · Plane of array
+                - text: Gross POA
+              - button [ref=f1e135] [cursor=pointer]:
+                - strong [ref=f1e136]: 20 · Effective irradiance
+                - text: Direct shade
+              - button [ref=f1e137] [cursor=pointer]:
+                - strong [ref=f1e138]: 21 · Effective irradiance
+                - text: Shade electrical effect
+              - button [ref=f1e139] [cursor=pointer]:
+                - strong [ref=f1e140]: 22 · Effective irradiance
+                - text: Diffuse shade
+              - button [ref=f1e141] [cursor=pointer]:
+                - strong [ref=f1e142]: 23 · Effective irradiance
+                - text: Rear losses
+              - button [ref=f1e143] [cursor=pointer]:
+                - strong [ref=f1e144]: 24 · Effective irradiance
+                - text: Soiling
+              - button [ref=f1e145] [cursor=pointer]:
+                - strong [ref=f1e146]: 25 · Effective irradiance
+                - text: Direct reflection
+              - button [ref=f1e147] [cursor=pointer]:
+                - strong [ref=f1e148]: 26 · Effective irradiance
+                - text: Diffuse reflection
+              - button [ref=f1e149] [cursor=pointer]:
+                - strong [ref=f1e150]: 27 · Effective irradiance
+                - text: Spectral response
+              - button [ref=f1e151] [cursor=pointer]:
+                - strong [ref=f1e152]: 28 · Effective irradiance
+                - text: Effective POA
+              - button [ref=f1e153] [cursor=pointer]:
+                - strong [ref=f1e154]: 29 · Module DC
+                - text: Cell temperature
+              - button [ref=f1e155] [cursor=pointer]:
+                - strong [ref=f1e156]: 30 · Module DC
+                - text: Diode parameters
+              - button [ref=f1e157] [cursor=pointer]:
+                - strong [ref=f1e158]: 31 · Module DC
+                - text: Module IV curve
+              - button [ref=f1e159] [cursor=pointer]:
+                - strong [ref=f1e160]: 32 · Module DC
+                - text: Degradation
+              - button [ref=f1e161] [cursor=pointer]:
+                - strong [ref=f1e162]: 33 · Module DC
+                - text: String voltage
+              - button [ref=f1e163] [cursor=pointer]:
+                - strong [ref=f1e164]: 34 · DC delivery
+                - text: String DC wiring
+              - button [ref=f1e165] [cursor=pointer]:
+                - strong [ref=f1e166]: 35 · DC delivery
+                - text: Inverter DC wiring
+              - button [ref=f1e167] [cursor=pointer]:
+                - strong [ref=f1e168]: 36 · Power conversion
+                - text: Inverter
+              - button [ref=f1e169] [cursor=pointer]:
+                - strong [ref=f1e170]: 37 · AC delivery
+                - text: AC wiring
+              - button [ref=f1e171] [cursor=pointer]:
+                - strong [ref=f1e172]: 38 · AC delivery
+                - text: Transformer
+              - button [ref=f1e173] [cursor=pointer]:
+                - strong [ref=f1e174]: 39 · Grid
+                - text: POI limit
+      - heading "The three sections" [level=2] [ref=e56]
+      - paragraph [ref=e57]: "The journey is divided into three physical sections:"
+      - list [ref=e58]:
+        - listitem [ref=e59]:
+          - strong [ref=e60]: "Atmosphere:"
+          - text: solar position, air mass, water vapor, and the separation of measured sunlight into direct and diffuse components.
+        - listitem [ref=e61]:
+          - strong [ref=e62]: "DC:"
+          - text: tracker geometry, irradiance on the module, shading, reflection, spectral response, cell temperature, diode behavior, degradation, and direct-current wiring.
+        - listitem [ref=e63]:
+          - strong [ref=e64]: "AC:"
+          - text: inverter conversion, alternating-current wiring, transformer loss, and the final grid export limit.
+      - paragraph [ref=e65]: Use the timeline, controls, or arrow keys to inspect individual calculations, or let the complete journey play automatically.

@@ -1,0 +1,861 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="An animated journey through a pvlib-based solar simulation.">
+  <meta property="og:title" content="A photon through a pvlib simulation">
+  <meta property="og:description"
+    content="Follow one photon through a pvlib-based solar simulation.">
+  <meta property="og:type" content="website">
+  <meta property="og:url"
+    content="https://kurt-rhee.github.io/blog/photon-journey/">
+  <link rel="canonical"
+    href="https://kurt-rhee.github.io/blog/photon-journey/">
+  <title>A photon through a pvlib simulation</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --ink: #f7f5ef;
+      --muted: #a7adba;
+      --panel: rgba(15, 22, 36, .86);
+      --line: rgba(255, 255, 255, .12);
+      --sun: #ffd166;
+      --photon: #fff4a8;
+      --electric: #5eead4;
+      --blue: #78a6ff;
+      --violet: #bd9cff;
+      --shadow: 0 24px 80px rgba(0, 0, 0, .38);
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      overflow-x: hidden;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at 72% 12%, rgba(70, 104, 168, .17), transparent 34rem),
+        radial-gradient(circle at 15% 85%, rgba(19, 134, 122, .1), transparent 30rem),
+        #070b12;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    button, select { font: inherit; }
+
+    .shell {
+      width: min(1440px, 100%);
+      min-height: 100vh;
+      margin: 0 auto;
+      padding: 28px clamp(18px, 4vw, 64px) 24px;
+      display: grid;
+      grid-template-rows: auto 1fr auto;
+      gap: 24px;
+    }
+
+    header, .brand, .controls, .step-meta, .legend, .model-line {
+      display: flex;
+      align-items: center;
+    }
+
+    header { justify-content: space-between; gap: 24px; }
+    .brand { gap: 14px; }
+
+    .mark {
+      width: 42px;
+      height: 42px;
+      display: grid;
+      place-items: center;
+      border: 1px solid rgba(255, 209, 102, .35);
+      border-radius: 50%;
+      background: rgba(255, 209, 102, .08);
+      color: var(--sun);
+      box-shadow: inset 0 0 22px rgba(255, 209, 102, .08);
+    }
+
+    h1 { margin: 0; font: 600 clamp(20px, 2.3vw, 30px)/1.1 Georgia, serif; letter-spacing: -.02em; }
+    .eyebrow { margin: 0 0 5px; color: var(--sun); font-size: 10px; font-weight: 750; letter-spacing: .18em; text-transform: uppercase; }
+    .controls { gap: 9px; }
+
+    .control {
+      min-height: 38px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: rgba(255, 255, 255, .055);
+      color: var(--ink);
+      padding: 8px 14px;
+      cursor: pointer;
+      transition: border-color .2s, background .2s, transform .2s;
+    }
+
+    .control:hover { background: rgba(255, 255, 255, .1); border-color: rgba(255, 255, 255, .25); }
+    .control:active { transform: scale(.97); }
+    .control.primary { background: var(--ink); color: #0c111b; border-color: var(--ink); font-weight: 700; }
+    select.control { appearance: none; padding-right: 16px; }
+
+    main {
+      min-height: 0;
+      display: grid;
+      grid-template-columns: minmax(0, 1.65fr) minmax(300px, .8fr);
+      border: 1px solid var(--line);
+      border-radius: 24px;
+      overflow: hidden;
+      background: rgba(9, 14, 24, .76);
+      box-shadow: var(--shadow);
+    }
+
+    .visual {
+      position: relative;
+      min-height: 550px;
+      overflow: hidden;
+      border-right: 1px solid var(--line);
+      background: linear-gradient(165deg, rgba(16, 29, 49, .9), rgba(7, 11, 18, .98) 68%);
+    }
+
+    .visual::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      background-image: linear-gradient(rgba(255,255,255,.025) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.025) 1px, transparent 1px);
+      background-size: 32px 32px;
+      mask-image: linear-gradient(to bottom, black, transparent 82%);
+    }
+
+    .scene-label {
+      position: absolute;
+      z-index: 3;
+      top: 24px;
+      left: 26px;
+      padding: 7px 11px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      color: var(--muted);
+      background: rgba(7, 11, 18, .55);
+      font-size: 11px;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+    }
+
+    svg { width: 100%; height: 100%; position: absolute; inset: 0; }
+    .route { fill: none; stroke: rgba(255,255,255,.13); stroke-width: 2; stroke-dasharray: 4 8; }
+    .category-boundary { stroke-width: 1.5; transition: fill .35s, stroke .35s, filter .35s; }
+    .category-boundary.active { fill: rgba(255,255,255,.055); stroke: rgba(255,255,255,.55); filter: drop-shadow(0 0 10px rgba(255,255,255,.08)); }
+    .category-title { fill: #f4f6fb; font-size: 14px; font-weight: 750; letter-spacing: .15em; text-anchor: middle; }
+    .category-subtitle { fill: #7f8796; font-size: 10px; letter-spacing: .08em; text-anchor: middle; }
+    .device-rail { stroke: rgba(255,255,255,.12); stroke-width: 2; }
+    .node { opacity: .48; transition: opacity .35s, filter .35s; }
+    .node.active { opacity: 1; filter: drop-shadow(0 0 12px rgba(255,255,255,.18)); }
+    .node-label { fill: #a7adba; font-size: 11px; text-anchor: middle; letter-spacing: .07em; text-transform: uppercase; }
+    .node.active .node-label { fill: #fff; }
+    .photon-glow { fill: var(--photon); opacity: .28; }
+    #particle { fill: var(--photon); transition: fill .45s; }
+    #particle.electric { fill: var(--electric); }
+    #particleGlow.electric { fill: var(--electric); }
+    #stepIllustration { pointer-events: none; color: var(--sun); filter: drop-shadow(0 0 8px rgba(255, 209, 102, .4)); }
+    #stepIllustration.electric { color: var(--electric); filter: drop-shadow(0 0 8px rgba(94, 234, 212, .4)); }
+    .step-illustration-art { color: inherit; }
+
+    .legend {
+      position: absolute;
+      z-index: 3;
+      left: 26px;
+      bottom: 22px;
+      gap: 17px;
+      color: var(--muted);
+      font-size: 11px;
+    }
+
+    .legend span { display: inline-flex; align-items: center; gap: 7px; }
+    .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--photon); box-shadow: 0 0 10px currentColor; }
+    .dot.electric { background: var(--electric); }
+
+    aside {
+      min-height: 550px;
+      padding: clamp(28px, 4vw, 50px);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      background: var(--panel);
+    }
+
+    .step-meta { justify-content: space-between; margin-bottom: 28px; color: var(--muted); font-size: 12px; }
+    .step-number { font-variant-numeric: tabular-nums; letter-spacing: .08em; }
+    .state { padding: 5px 9px; border: 1px solid currentColor; border-radius: 999px; color: var(--sun); }
+    .state.electric { color: var(--electric); }
+    h2 { min-height: 2.25em; margin: 0 0 15px; font: 500 clamp(30px, 4vw, 52px)/1.05 Georgia, serif; letter-spacing: -.035em; }
+    .explanation { min-height: 5.2em; margin: 0 0 28px; color: #c1c6d0; font-size: 15px; line-height: 1.62; }
+
+    .model-card {
+      padding: 18px;
+      border: 1px solid var(--line);
+      border-radius: 15px;
+      background: rgba(255, 255, 255, .035);
+    }
+
+    .model-card > p { margin: 0 0 13px; color: var(--muted); font-size: 10px; font-weight: 750; letter-spacing: .15em; text-transform: uppercase; }
+    .model-list { min-height: 74px; display: grid; gap: 9px; }
+    .model-line { justify-content: space-between; gap: 14px; font-size: 13px; }
+    .model-line span:first-child { color: var(--muted); }
+    .model-name { color: var(--ink); font-family: ui-monospace, SFMono-Regular, Menlo, monospace; text-align: right; }
+    .note { min-height: 2.8em; margin: 18px 0 0; color: #858d9c; font-size: 11px; line-height: 1.45; }
+
+    footer { display: grid; gap: 13px; }
+    .progress { height: 2px; background: rgba(255,255,255,.1); overflow: hidden; }
+    .progress-bar { width: 0; height: 100%; background: linear-gradient(90deg, var(--sun), var(--electric)); transition: width .55s cubic-bezier(.2,.7,.2,1); }
+    .timeline { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 6px; scrollbar-color: #3a4352 transparent; }
+
+    .step-button {
+      flex: 0 0 148px;
+      min-width: 0;
+      padding: 10px 8px;
+      border: 1px solid transparent;
+      border-radius: 9px;
+      color: #737c8d;
+      background: transparent;
+      font-size: 11px;
+      text-align: left;
+      cursor: pointer;
+      transition: color .2s, background .2s, border-color .2s;
+    }
+
+    .step-button strong { display: block; margin-bottom: 4px; color: inherit; font-size: 9px; letter-spacing: .08em; }
+    .step-button.active { color: var(--ink); background: rgba(255,255,255,.055); border-color: var(--line); }
+    .step-button.visited { color: #aeb5c2; }
+
+    @media (max-width: 860px) {
+      .shell { min-height: auto; }
+      header { align-items: flex-start; }
+      .controls { flex-wrap: wrap; justify-content: flex-end; }
+      main { grid-template-columns: 1fr; }
+      .visual { min-height: 390px; border-right: 0; border-bottom: 1px solid var(--line); }
+      aside { min-height: 410px; }
+      .timeline { display: flex; }
+    }
+
+    @media (max-width: 560px) {
+      .shell { padding: 17px 12px; }
+      header { display: grid; }
+      .controls { justify-content: flex-start; }
+      .visual { min-height: 330px; }
+      aside { min-height: 440px; padding: 28px 22px; }
+      .timeline { display: flex; overflow-x: auto; padding-bottom: 4px; }
+      .step-button { min-width: 112px; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { scroll-behavior: auto !important; transition-duration: .01ms !important; animation-duration: .01ms !important; }
+    }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <header>
+      <div class="brand">
+        <div class="mark" aria-hidden="true">☼</div>
+        <div>
+          <p class="eyebrow">pvlib · solar simulation</p>
+          <h1>A photon’s journey to the grid</h1>
+        </div>
+      </div>
+      <div class="controls" aria-label="Animation controls">
+        <button class="control" id="previousButton" type="button" aria-label="Previous modeling step">← Previous</button>
+        <button class="control primary" id="playButton" type="button">Pause</button>
+        <button class="control" id="nextButton" type="button" aria-label="Next modeling step">Next →</button>
+        <button class="control" id="restartButton" type="button">Restart</button>
+        <select class="control" id="speedSelect" aria-label="Animation speed">
+          <option value="6500">Slow</option>
+          <option value="4200" selected>Normal</option>
+          <option value="2400">Fast</option>
+        </select>
+      </div>
+    </header>
+
+    <main>
+      <section class="visual" aria-label="Animated photon path">
+        <div class="scene-label" id="sceneLabel">Meteorology</div>
+        <svg viewBox="0 0 900 600" role="img" aria-labelledby="sceneTitle sceneDescription">
+          <title id="sceneTitle">A photon traveling through a pvlib-based solar simulation</title>
+          <desc id="sceneDescription">The path begins at the sun, crosses the atmosphere, strikes a module, becomes direct-current electricity, and travels through inverter, transformer, and grid.</desc>
+          <defs>
+            <radialGradient id="sunFill">
+              <stop offset="0" stop-color="#fff7bf"/>
+              <stop offset=".62" stop-color="#ffd166"/>
+              <stop offset="1" stop-color="#f59e0b"/>
+            </radialGradient>
+            <linearGradient id="panelFill" x1="0" y1="0" x2="1" y2="1">
+              <stop stop-color="#426392"/>
+              <stop offset="1" stop-color="#152a47"/>
+            </linearGradient>
+            <filter id="softGlow" x="-200%" y="-200%" width="400%" height="400%">
+              <feGaussianBlur stdDeviation="8"/>
+            </filter>
+            <symbol id="icon-pressure" viewBox="-12 -12 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M-10 8l6-11 4 6 3-4 7 9zM7-9v9m-3-3 3 3 3-3"/></symbol>
+            <symbol id="icon-solar-position" viewBox="-12 -12 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><circle r="4"/><path d="M0-11v3M0 8v3M-11 0h3M8 0h3M-8-8l2 2M6 6l2 2M8-8L6-6M-6 6l-2 2"/></symbol>
+            <symbol id="icon-relative-airmass" viewBox="-12 -12 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M-9 8h18M-9 3h18M-9-2h18M-8 8L7-8m-1 0h4v4"/></symbol>
+            <symbol id="icon-absolute-airmass" viewBox="-12 -12 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><circle cy="2" r="8"/><path d="M0 2l5-4M-5 6h10M0-10v4"/></symbol>
+            <symbol id="icon-dew-point" viewBox="-12 -12 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"><path d="M0-10S-7-2-7 4a7 7 0 0014 0C7-2 0-10 0-10z"/><path d="M-3 5a3 3 0 003 2"/></symbol>
+            <symbol id="icon-water-column" viewBox="-12 -12 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M-9-1a4 4 0 014-4 5 5 0 019-1 4 4 0 014 5zM-5 3v5M0 2v7M5 3v5"/></symbol>
+            <symbol id="icon-extra-dni" viewBox="-12 -12 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="-3" cy="2" r="7"/><circle cx="7" cy="-7" r="3"/><path d="M-10 2h14M-3-5c3 3 3 11 0 14M7-12v2M12-7h-2"/></symbol>
+            <symbol id="icon-direct" viewBox="-12 -12 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="-6" cy="-6" r="3"/><path d="M-3-3L8 8m0-5v5H3M-9 7h8"/></symbol>
+            <symbol id="icon-diffuse" viewBox="-12 -12 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M-9-2a4 4 0 014-4 5 5 0 019-1 4 4 0 014 5zM-6 2l-3 5M0 2v6M6 2l3 5"/></symbol>
+            <symbol id="icon-control" viewBox="-12 -12 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M-9-6H9M-9 0H9M-9 6H9"/><circle cx="-3" cy="-6" r="2" fill="#070b12"/><circle cx="5" r="2" fill="#070b12"/><circle cx="-5" cy="6" r="2" fill="#070b12"/></symbol>
+            <symbol id="icon-pitch" viewBox="-12 -12 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M-10 5l7-4v5l-7 4zM3 0l7-4v5L3 5zM-2-6H5m-7 0 3-2m-3 2 3 2m4-2L2-8m3 2L2-4"/></symbol>
+            <symbol id="icon-angles" viewBox="-12 -12 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M-9 8H9M-7 8L7-7M-2 8a7 7 0 012-5"/><circle cx="7" cy="-7" r="2"/></symbol>
+            <symbol id="icon-reverse" viewBox="-12 -12 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M8-6H-2a7 7 0 000 14h6M-7-10l-4 4 4 4M4 4l4 4-4 4"/></symbol>
+            <symbol id="icon-selection" viewBox="-12 -12 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M-9-7h5l4 7 4 7h5M-9 7h5l2-3M5-7h4M6-10l3 3-3 3M6 4l3 3-3 3"/></symbol>
+            <symbol id="icon-sky" viewBox="-12 -12 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M-10 2a4 4 0 014-4 5 5 0 019-1 4 4 0 014 5zM-8 7h16M-5 10h10"/></symbol>
+            <symbol id="icon-ground" viewBox="-12 -12 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M-10 7H10M-8 3h16M-6-9L4 1m0-5v5h-5"/></symbol>
+            <symbol id="icon-beam" viewBox="-12 -12 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M-9-9L7 7m0-6v6H1M-8 8h16"/></symbol>
+            <symbol id="icon-rear" viewBox="-12 -12 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M-8 2L5-5l3 6-13 7zM-9 9l4-1-2-3M9-7L5-5l2 3"/></symbol>
+            <symbol id="icon-sum" viewBox="-12 -12 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M7-9H-6l6 9-6 9H7M-10-5h4M-10 5h4"/></symbol>
+            <symbol id="icon-direct-shade" viewBox="-12 -12 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"><path d="M-10 1l8-4v6l-8 4zM2-2l8-4v6L2 4z"/><path d="M-3-9L8 2M-8 8h16" stroke-dasharray="2 2"/></symbol>
+            <symbol id="icon-cell-shade" viewBox="-12 -12 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><rect x="-9" y="-8" width="18" height="16" rx="1"/><path d="M-3-8V8M3-8V8M-9 0H9M-9-8L3 8" stroke-width="2.3"/></symbol>
+            <symbol id="icon-diffuse-shade" viewBox="-12 -12 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M-9-4a4 4 0 014-4 5 5 0 019-1 4 4 0 014 5zM-6 1l-3 4M0 1l-3 5M6 1L3 6M-9 9H9"/></symbol>
+            <symbol id="icon-rear-loss" viewBox="-12 -12 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M0-10l8 3v6c0 5-3 8-8 10-5-2-8-5-8-10v-6zM-4-3l8 6M4-3l-8 6"/></symbol>
+            <symbol id="icon-soiling" viewBox="-12 -12 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M-9 7L5-7M2-8l6 6M-7 5l3 3M-8-7h.1M-2-3h.1M7 6h.1"/><circle cx="-8" cy="-7" r="1" fill="currentColor" stroke="none"/><circle cx="-2" cy="-3" r="1" fill="currentColor" stroke="none"/><circle cx="7" cy="6" r="1" fill="currentColor" stroke="none"/></symbol>
+            <symbol id="icon-direct-reflection" viewBox="-12 -12 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M-9-8L0 1l9-9M-9 8L0 1l9 9M-10 1H10"/></symbol>
+            <symbol id="icon-diffuse-reflection" viewBox="-12 -12 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M-10 2H10M-7-8L-2 2M0-9L2 2M7-8L6 2M-7 9l5-7M0 10l2-8M8 8L6 2"/></symbol>
+            <symbol id="icon-spectrum" viewBox="-12 -12 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M-4-8L4 8H-10zM4 0l7-5M5 3l7-1M5 6l6 3"/></symbol>
+            <symbol id="icon-effective" viewBox="-12 -12 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M0-10v20M-10 0h20M-7-7L7 7M7-7L-7 7"/><circle r="3"/></symbol>
+            <symbol id="icon-temperature" viewBox="-12 -12 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><path d="M-2-8a3 3 0 016 0V3a5 5 0 11-6 0zM1-5v10"/><circle cx="1" cy="6" r="2"/></symbol>
+            <symbol id="icon-diode" viewBox="-12 -12 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M-10 0h5M5 0h5M-5-6L5 0l-10 6zM5-6V6M-8-8v3M-10-6h4"/></symbol>
+            <symbol id="icon-iv-curve" viewBox="-12 -12 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M-9-9V8H9M-7-6C-1-6 4-6 5-2s1 7 3 8M3-1h5M6-4v6"/></symbol>
+            <symbol id="icon-degradation" viewBox="-12 -12 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M-9-7l6 4 4-1 8 9M4 5h5V0M-9 9H9"/></symbol>
+            <symbol id="icon-string" viewBox="-12 -12 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="-10" y="-5" width="5" height="10"/><rect x="-2.5" y="-5" width="5" height="10"/><rect x="5" y="-5" width="5" height="10"/><path d="M-5 0h2.5M2.5 0H5"/></symbol>
+            <symbol id="icon-dc-wire-one" viewBox="-12 -12 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M-11 0h4l2-4 4 8 4-8 4 8 2-4h2M-8-8h6M-5-11v6"/></symbol>
+            <symbol id="icon-dc-wire-two" viewBox="-12 -12 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M-11 0h4l2-4 4 8 4-8 4 8 2-4h2M2-9h7M5.5-11v4"/></symbol>
+            <symbol id="icon-inverter" viewBox="-12 -12 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><rect x="-10" y="-8" width="20" height="16" rx="2"/><path d="M-7-3h6M-4-6v6M1 3c2-4 4 4 7 0"/></symbol>
+            <symbol id="icon-ac-wire" viewBox="-12 -12 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><path d="M-11 0c3-7 7-7 11 0s8 7 11 0M-8 8h16"/></symbol>
+            <symbol id="icon-transformer" viewBox="-12 -12 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M-10-8v16M10-8v16M-7-6c6 0 6 4 0 4 6 0 6 4 0 4 6 0 6 4 0 4M7-6c-6 0-6 4 0 4-6 0-6 4 0 4-6 0-6 4 0 4"/></symbol>
+            <symbol id="icon-grid" viewBox="-12 -12 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M0-10L-7 10M0-10l7 20M-5-4H5M-8 2H8M-10 10H10M0-10V10"/></symbol>
+          </defs>
+
+          <g aria-label="Model categories">
+            <rect class="category-boundary" data-category="atmosphere" x="18" y="52" width="277" height="496" rx="18" fill="rgba(120,166,255,.035)" stroke="rgba(120,166,255,.28)"/>
+            <rect class="category-boundary" data-category="dc" x="305" y="52" width="340" height="496" rx="18" fill="rgba(94,234,212,.035)" stroke="rgba(94,234,212,.28)"/>
+            <rect class="category-boundary" data-category="ac" x="655" y="52" width="227" height="496" rx="18" fill="rgba(189,156,255,.035)" stroke="rgba(189,156,255,.28)"/>
+            <text class="category-title" x="156" y="86">ATMOSPHERE</text>
+            <text class="category-subtitle" x="156" y="104">SUNLIGHT AND WEATHER</text>
+            <text class="category-title" x="475" y="86">DC</text>
+            <text class="category-subtitle" x="475" y="104">MODULE TO INVERTER INPUT</text>
+            <text class="category-title" x="768" y="86">AC</text>
+            <text class="category-subtitle" x="768" y="104">INVERTER OUTPUT TO GRID</text>
+          </g>
+
+          <path class="route" d="M70 288H270 M325 288H625 M690 288H850"/>
+          <path class="device-rail" d="M70 468H850"/>
+
+          <g class="node" data-node="0" transform="translate(70 468)">
+            <circle r="38" fill="url(#sunFill)" opacity=".16"/>
+            <circle r="22" fill="url(#sunFill)"/>
+            <g stroke="#ffd166" stroke-width="2" opacity=".65">
+              <path d="M0-33v-11M0 33v11M-33 0h-11M33 0h11M-23-23l-8-8M23 23l8 8M23-23l8-8M-23 23l-8 8"/>
+            </g>
+            <text class="node-label" y="68">Sun</text>
+          </g>
+
+          <g class="node" data-node="1" transform="translate(200 468)">
+            <path d="M-48 2c3-17 16-25 30-22 7-19 34-21 44-3 15-3 29 8 30 25z" fill="#b7c9e7" opacity=".2" stroke="#b7c9e7"/>
+            <path d="M-44 17h89" stroke="#78a6ff" stroke-width="2" opacity=".55"/>
+            <text class="node-label" y="52">Air column</text>
+          </g>
+
+          <g class="node" data-node="2" transform="translate(347 458)">
+            <path d="M-37 2L28-18 40 12-25 32z" fill="url(#panelFill)" stroke="#78a6ff" stroke-width="2"/>
+            <g stroke="#94b8ef" opacity=".35">
+              <path d="M-20-3l11 30M-3-8L8 22M14-13l11 30M-31 13l65-20M-26 25l65-20"/>
+            </g>
+            <path d="M6 23v27M-10 28l-8 22M6 50h-24" fill="none" stroke="#697386" stroke-width="3"/>
+            <text class="node-label" y="78">Module</text>
+          </g>
+
+          <g class="node" data-node="3" transform="translate(430 468)">
+            <circle r="20" fill="none" stroke="#bd9cff" stroke-width="2"/>
+            <path d="M-12 0h24M0-12v24" stroke="#bd9cff" stroke-width="2"/>
+            <text class="node-label" y="49">Optics</text>
+          </g>
+
+          <g class="node" data-node="4" transform="translate(510 468)">
+            <rect x="-25" y="-20" width="50" height="40" rx="6" fill="#132d35" stroke="#5eead4"/>
+            <path d="M-15 0h8l5-9L7 9l5-9h8" fill="none" stroke="#5eead4" stroke-width="2"/>
+            <text class="node-label" y="48">PV cell</text>
+          </g>
+
+          <g class="node" data-node="5" transform="translate(595 468)">
+            <path d="M-35 0h70" stroke="#5eead4" stroke-width="4"/>
+            <path d="M-27-8l12 8-12 8M-3-8L9 0-3 8M21-8l12 8-12 8" fill="none" stroke="#5eead4"/>
+            <text class="node-label" y="36">DC wiring</text>
+          </g>
+
+          <g class="node" data-node="6" transform="translate(695 468)">
+            <rect x="-27" y="-27" width="54" height="54" rx="9" fill="#191d31" stroke="#bd9cff"/>
+            <path d="M-17 10h14M3-7c6-8 12 8 18 0" fill="none" stroke="#bd9cff" stroke-width="2"/>
+            <text class="node-label" y="48">Inverter</text>
+            <path d="M34 0c7-12 14-12 21 0s14 12 21 0" fill="none" stroke="#bd9cff" stroke-width="2"/>
+            <text class="node-label" x="56" y="28">AC wiring</text>
+          </g>
+
+          <g class="node" data-node="7" transform="translate(795 468)">
+            <circle cx="-11" r="15" fill="none" stroke="#78a6ff" stroke-width="2"/>
+            <circle cx="11" r="15" fill="none" stroke="#78a6ff" stroke-width="2"/>
+            <text class="node-label" y="40">Transformer</text>
+            <g transform="translate(60 0)" fill="none" stroke="#697386" stroke-width="2">
+              <path d="M0-27L-17 24M0-27l17 51M-13-8h26M-18 8h36M-23 24h46"/>
+            </g>
+            <text class="node-label" x="60" y="40">Grid</text>
+          </g>
+
+          <circle id="particleGlow" class="photon-glow" cx="70" cy="288" r="23" filter="url(#softGlow)"/>
+          <circle id="particle" cx="70" cy="288" r="6"/>
+          <g id="stepIllustration" transform="translate(70 288)" aria-hidden="true">
+            <use id="stepIllustrationArt" class="step-illustration-art" href="#icon-pressure" x="-27" y="-27" width="54" height="54"/>
+          </g>
+        </svg>
+        <div class="legend" aria-hidden="true">
+          <span><i class="dot"></i> photon</span>
+          <span><i class="dot electric"></i> electrical energy</span>
+        </div>
+      </section>
+
+      <aside aria-live="polite">
+        <div class="step-meta">
+          <span class="step-number" id="stepNumber">01 / 08</span>
+          <span class="state" id="stateLabel">PHOTON</span>
+        </div>
+        <h2 id="stepTitle">Convert elevation to pressure</h2>
+        <p class="explanation" id="stepExplanation"></p>
+        <div class="model-card">
+          <p>Calculation detail · active path</p>
+          <div class="model-list" id="modelList"></div>
+        </div>
+        <p class="note" id="stepNote"></p>
+      </aside>
+    </main>
+
+    <footer>
+      <div class="progress" aria-hidden="true"><div class="progress-bar" id="progressBar"></div></div>
+      <nav class="timeline" id="timeline" aria-label="Journey stages"></nav>
+    </footer>
+  </div>
+
+  <script>
+    const steps = [
+      {
+        phase: "Meteorology", short: "Site pressure", title: "Convert elevation to pressure",
+        explanation: "The atmospheric calculation begins with site elevation. Pressure is estimated from the standard atmosphere so later air-mass and irradiance calculations reflect the thinner air at higher elevations.",
+        models: [["Method", "pvlib alt2pres"], ["Input", "elevation (m)"], ["Output", "site pressure (Pa)"]],
+        note: "Function: calc_site_pressure. This value is constant for the simulated site.", point: [112,105], node: 0, state: "photon"
+      },
+      {
+        phase: "Meteorology", short: "Solar position", title: "Calculate the sun’s position",
+        explanation: "Time, latitude, longitude, elevation, and ambient temperature determine apparent and geometric zenith, elevation, azimuth, and equation of time. An optional minute offset shifts the timestamp before calculation.",
+        models: [["Model", "NREL 2008 SPA"], ["Inputs", "time · location · temperature"], ["Key outputs", "zenith · azimuth · elevation"]],
+        note: "pvlib.solarposition.get_solarposition. NREL 2008 is the only implemented choice.", point: [128,112], node: 0, state: "photon"
+      },
+      {
+        phase: "Meteorology", short: "Relative air mass", title: "Measure the slanted air path",
+        explanation: "Apparent solar zenith is converted to relative air mass: the photon’s atmospheric path length relative to the shortest path when the sun is directly overhead.",
+        models: [["Model", "Kasten–Young 1989"], ["Input", "apparent zenith"], ["Output", "relative air mass"]],
+        note: "pvlib.atmosphere.get_relative_airmass. This is the only implemented relative-air-mass model.", point: [148,122], node: 1, state: "photon"
+      },
+      {
+        phase: "Meteorology", short: "Absolute air mass", title: "Correct air mass for pressure",
+        explanation: "Relative air mass is pressure-corrected to obtain absolute air mass. This represents the actual atmospheric material in the optical path and later drives the spectral correction.",
+        models: [["Model", "Gueymard 1993"], ["Inputs", "relative air mass · pressure"], ["Output", "absolute air mass"]],
+        note: "pvlib.atmosphere.get_absolute_airmass. Gueymard 1993 is the configured model name.", point: [168,134], node: 1, state: "photon"
+      },
+      {
+        phase: "Meteorology", short: "Dew point", title: "Estimate dew-point temperature",
+        explanation: "Ambient temperature and relative humidity are converted to dew point. This atmospheric moisture indicator is required if the direct-normal irradiance path uses DIRINT and by reverse transposition.",
+        models: [["Model", "Magnus–Tetens"], ["Inputs", "air temperature · humidity"], ["Output", "dew point (°C)"]],
+        note: "pvlib.atmosphere.tdew_from_rh with coefficients 6.112, 17.62, and 243.12.", point: [188,148], node: 1, state: "photon"
+      },
+      {
+        phase: "Meteorology", short: "Water column", title: "Estimate precipitable water",
+        explanation: "Temperature and relative humidity estimate the depth of liquid water that would result if all water vapor above the site condensed. This describes wavelength-dependent atmospheric absorption.",
+        models: [["Model", "Gueymard 1994"], ["Inputs", "air temperature · humidity"], ["Output", "precipitable water (cm)"]],
+        note: "pvlib.atmosphere.gueymard94_pw. The value is used later for CdTe spectral response.", point: [208,163], node: 1, state: "photon"
+      },
+      {
+        phase: "Meteorology", short: "Extraterrestrial DNI", title: "Set irradiance above the atmosphere",
+        explanation: "Day of year adjusts the 1360.8 W/m² solar constant for Earth–Sun distance, producing direct-normal irradiance immediately outside the atmosphere.",
+        models: [["Model", "Spencer"], ["Inputs", "timestamp · 1360.8 W/m²"], ["Output", "extraterrestrial DNI"]],
+        note: "pvlib.irradiance.get_extra_radiation using the Spencer method and epoch year 2014.", point: [228,178], node: 1, state: "photon"
+      },
+      {
+        phase: "Meteorology", short: "Direct irradiance", title: "Separate direct sunlight from GHI",
+        explanation: "Measured global horizontal irradiance is decomposed into direct-normal irradiance using geometric zenith, extraterrestrial irradiance, and time. Values are constrained near the horizon with minimum cosine 0.065 and maximum zenith 87°.",
+        models: [["Default", "Erbs–Driesse"], ["Inputs", "GHI · zenith · extra DNI"], ["Output", "DNI"]],
+        note: "pvlib.irradiance.erbs_driesse. DIRINT is implemented as an alternate and also consumes pressure and dew point.", point: [250,194], node: 1, state: "photon"
+      },
+      {
+        phase: "Meteorology", short: "Diffuse irradiance", title: "Complete the horizontal components",
+        explanation: "Diffuse horizontal irradiance is the residual horizontal light after the horizontal projection of direct-normal irradiance is removed from global horizontal irradiance.",
+        models: [["Method", "complete irradiance"], ["Inputs", "GHI · DNI · zenith"], ["Output", "DHI"]],
+        note: "pvlib.irradiance.complete_irradiance. This is a balance calculation, not a selectable model.", point: [272,211], node: 1, state: "photon"
+      },
+      {
+        phase: "Surface", short: "Control choice", title: "Choose the rack behavior",
+        explanation: "Rack type and module technology choose the surface-control branch. Fixed-tilt rows remain fixed. CdTe trackers use true tracking; other trackers use backtracking to reduce row-to-row beam shade.",
+        models: [["Fixed racks", "fixed tilt"], ["CdTe trackers", "true tracking"], ["Other trackers", "backtracking"]],
+        note: "Function: calc_rotation_algorithm. This selects the geometry calculation; it does not move data in this view.", point: [320,254], node: 2, state: "photon"
+      },
+      {
+        phase: "Surface", short: "Row pitch", title: "Determine collector spacing",
+        explanation: "Fixed racks use entered pitch. For trackers, pitch is module length divided by ground-coverage ratio. Spacing affects backtracking, direct shade, diffuse masking, and rear irradiance.",
+        models: [["Fixed racks", "entered pitch"], ["Trackers", "length ÷ GCR"], ["Output", "pitch (m)"]],
+        note: "Function: calc_pitch. GCR means collector width divided by row pitch.", point: [355,292], node: 2, state: "photon"
+      },
+      {
+        phase: "Surface", short: "Surface angles", title: "Orient the receiving surface",
+        explanation: "A tracker’s rotation, surface tilt, surface azimuth, and incidence angle are calculated from the sun and rack limits. A fixed rack uses entered tilt, axis azimuth plus 90°, and a direct incidence-angle calculation.",
+        models: [["Tracker", "pvlib singleaxis"], ["Fixed incidence", "pvlib aoi"], ["Outputs", "tilt · azimuth · AOI"]],
+        note: "Tracker inputs include maximum rotation, ground-coverage ratio, and the selected backtracking flag.", point: [402,355], node: 2, state: "photon"
+      },
+      {
+        phase: "Plane of array", short: "Reverse transposition", title: "Reconstruct horizontal irradiance",
+        explanation: "When plane-of-array sensor data is available, the model iteratively reconstructs global, direct, and diffuse horizontal components from measured plane-of-array irradiance and median array orientation.",
+        models: [["Model", "GTI-DIRINT"], ["Sky submodel", "Perez 1990 composite"], ["Outputs", "retro GHI · DNI · DHI"]],
+        note: "pvlib.irradiance.gti_dirint; delta clearness is enabled, 30 iterations maximum, albedo 0.2.", point: [425,372], node: 3, state: "photon"
+      },
+      {
+        phase: "Plane of array", short: "Resource selection", title: "Select the irradiance source",
+        explanation: "The simulation selects measured/decomposed horizontal components or the reverse-transposed components. Plane-of-array-only mode always uses the reconstruction; otherwise a 1.15 global-irradiance ratio threshold participates in quality selection.",
+        models: [["Method", "tier selection rule"], ["Inputs", "measured + reconstructed"], ["Output", "chosen GHI · DNI · DHI"]],
+        note: "Function: HorizontalIrradiance. This is physical-input selection, not a transposition model.", point: [435,380], node: 3, state: "photon"
+      },
+      {
+        phase: "Plane of array", short: "Sky diffuse", title: "Transpose diffuse sky light",
+        explanation: "Diffuse horizontal irradiance is projected onto the tilted module and separated into isotropic dome, circumsolar brightening around the sun, and horizon brightening components.",
+        models: [["Model", "Perez–Driesse"], ["Inputs", "DHI · DNI · sun · surface · air mass"], ["Outputs", "isotropic · circumsolar · horizon"]],
+        note: "pvlib.irradiance.perez_driesse with component output enabled.", point: [445,387], node: 3, state: "photon"
+      },
+      {
+        phase: "Plane of array", short: "Ground diffuse", title: "Project ground-reflected light",
+        explanation: "Global horizontal irradiance reflects from the ground and reaches the tilted front surface. The ground is treated as isotropic with a fixed site albedo of 0.2.",
+        models: [["Model", "isotropic ground diffuse"], ["Inputs", "GHI · surface tilt · albedo"], ["Output", "ground diffuse POA"]],
+        note: "pvlib.irradiance.get_ground_diffuse. Surface type is not used.", point: [455,394], node: 3, state: "photon"
+      },
+      {
+        phase: "Plane of array", short: "Beam", title: "Project the direct beam",
+        explanation: "Direct-normal irradiance is projected along the sun-to-surface angle onto the module plane. Irradiance arriving from behind the front face contributes no front beam.",
+        models: [["Model", "beam component"], ["Inputs", "DNI · sun angles · surface angles"], ["Output", "front beam POA"]],
+        note: "pvlib.irradiance.beam_component.", point: [465,400], node: 3, state: "photon"
+      },
+      {
+        phase: "Plane of array", short: "Rear irradiance", title: "Trace light onto the rear face",
+        explanation: "For bifacial modules, a five-row view-factor scene traces direct and diffuse light, ground reflection, and row shading. The incident irradiance weighted across the rear of the selected modeled row becomes rear plane-of-array irradiance.",
+        models: [["Default", "pvfactors Solar Factors"], ["Geometry", "5 rows · height · width · pitch"], ["Output", "rear incident irradiance"]],
+        note: "Monofacial modules receive zero rear irradiance. Infinite Sheds exists in configuration but is deliberately rejected because of known defects.", point: [475,405], node: 3, state: "photon"
+      },
+      {
+        phase: "Plane of array", short: "Gross POA", title: "Sum incident light",
+        explanation: "Beam, isotropic sky, circumsolar sky, horizon sky, ground diffuse, and rear irradiance are added. The result is gross plane-of-array irradiance before shading, soiling, reflection, spectral response, or cell conversion.",
+        models: [["Method", "component sum"], ["Inputs", "6 irradiance components"], ["Output", "gross POA irradiance"]],
+        note: "Function: PlaneOfArrayIrradiance. No empirical loss is applied in this sum.", point: [482,408], node: 3, state: "photon"
+      },
+      {
+        phase: "Effective irradiance", short: "Direct shade", title: "Apply row-to-row direct shade",
+        explanation: "Sun position, tracker rotation, collector width, and pitch determine the shaded fraction of one row. The unshaded fraction multiplies beam and ground-diffuse light; circumsolar light is included only in Separate mode.",
+        models: [["Model", "pvlib shaded_fraction1d"], ["Default circumsolar", "Diffuse"], ["Affected", "beam · ground diffuse"]],
+        note: "Axis tilt, cross-axis slope, and surface-to-axis offset are currently zero; collector width is one module length.", point: [489,410], node: 3, state: "photon"
+      },
+      {
+        phase: "Effective irradiance", short: "Shade electrical effect", title: "Apply the cell-layout shade response",
+        explanation: "For crystalline-silicon modules, direct shade beyond one-twelfth of the collector invokes a discrete electrical penalty. Full-cell modules retain 4% of beam; half-cut modules retain 50%. Other technologies bypass this rule.",
+        models: [["Method", "empirical threshold rule"], ["Threshold", "shade fraction > 1/12"], ["Output", "adjusted beam"]],
+        note: "Function: EPOAIfterElectricalEffect. This is a model of electrical response to geometric shade, not curve recombination.", point: [496,412], node: 3, state: "photon"
+      },
+      {
+        phase: "Effective irradiance", short: "Diffuse shade", title: "Mask the diffuse sky",
+        explanation: "Surface tilt and row density determine the visible-sky masking angle. The Passias model converts that angle into a blocked diffuse fraction applied to isotropic and horizon light, plus circumsolar light in Diffuse mode.",
+        models: [["Geometry", "pvlib masking_angle"], ["Diffuse model", "Passias"], ["Affected", "isotropic · horizon · circumsolar"]],
+        note: "Slant height is currently fixed to zero.", point: [503,414], node: 3, state: "photon"
+      },
+      {
+        phase: "Effective irradiance", short: "Rear losses", title: "Apply rear-side collection losses",
+        explanation: "Rear incident light is reduced by structural obstruction, rear electrical mismatch, and the module’s bifaciality factor. Front-side components are unchanged.",
+        models: [["Method", "multiplicative factors"], ["Formula", "rear × (1−structure) × (1−mismatch) × bifaciality"], ["Output", "usable rear irradiance"]],
+        note: "The factors come from rack and module equipment properties.", point: [510,415], node: 3, state: "photon"
+      },
+      {
+        phase: "Effective irradiance", short: "Soiling", title: "Apply surface soiling",
+        explanation: "Every irradiance component is multiplied by the available clean-surface fraction. In the default configuration the fraction is forced to 1.0, so this stage is physically neutral.",
+        models: [["Default", "None (factor 1.0)"], ["Alternate", "measured soil percent"], ["Affected", "all 6 components"]],
+        note: "Function: EPOAIafterSoiling.", point: [516,417], node: 3, state: "photon"
+      },
+      {
+        phase: "Effective irradiance", short: "Direct reflection", title: "Model reflection at the glass",
+        explanation: "The direct incidence angle determines transmission through glass and any anti-reflective coating. The physical optical model attenuates beam; Separate mode also attenuates circumsolar irradiance as direct light.",
+        models: [["Model", "physical IAM"], ["Glass", "n=1.526 · K=4 · L=0.0032"], ["Coating", "n=1.29 if present"]],
+        note: "pvlib.iam.physical. The configured Tabular alternate is not implemented.", point: [522,419], node: 3, state: "photon"
+      },
+      {
+        phase: "Effective irradiance", short: "Diffuse reflection", title: "Model diffuse reflection at the glass",
+        explanation: "Diffuse light arrives across many angles, so separate effective transmission factors are integrated for sky, horizon, and ground irradiance. Diffuse-mode circumsolar light uses the isotropic factor.",
+        models: [["Model", "Marion diffuse IAM"], ["Optics", "physical glass model"], ["Outputs", "sky · horizon · ground factors"]],
+        note: "pvlib.iam.marion_diffuse with refractive index 1.526, K=4, and L=0.0032.", point: [528,421], node: 3, state: "photon"
+      },
+      {
+        phase: "Effective irradiance", short: "Spectral response", title: "Correct for photon wavelength",
+        explanation: "For CdTe modules, absolute air mass and precipitable water estimate how the atmospheric spectrum changes usable photocurrent. The resulting spectral factor multiplies every irradiance component. Other technologies receive factor 1.0.",
+        models: [["Model", "First Solar spectral factor"], ["Inputs", "technology · water · absolute air mass"], ["Output", "spectral multiplier"]],
+        note: "pvlib.spectrum.spectral_factor_firstsolar; water is bounded to 0.1–8 cm and air mass to 0.58–10.", point: [534,423], node: 4, state: "photon"
+      },
+      {
+        phase: "Effective irradiance", short: "Effective POA", title: "Sum usable irradiance",
+        explanation: "The six components are summed again after all geometric, optical, soiling, rear, and spectral modifiers. This effective irradiance is the light available to drive the module electrical model.",
+        models: [["Method", "component sum"], ["Inputs", "6 corrected components"], ["Output", "effective global irradiance"]],
+        note: "Function: EffectivePlaneOfArrayIrradiance.", point: [540,424], node: 4, state: "photon"
+      },
+      {
+        phase: "Module DC", short: "Cell temperature", title: "Calculate cell temperature",
+        explanation: "Effective irradiance heats the cell while ambient temperature and wind define its thermal surroundings. Module efficiency and absorption determine the fraction of incident energy retained as heat.",
+        models: [["Model", "PVsyst Cell"], ["Constants", "Uc=29 · Uv=0 · absorption=0.9"], ["Output", "cell temperature (°C)"]],
+        note: "pvlib.temperature.pvsyst_cell. The controller currently uses this model directly.", point: [546,425], node: 4, state: "photon"
+      },
+      {
+        phase: "Module DC", short: "Diode parameters", title: "Turn absorbed light into diode behavior",
+        explanation: "At this point the photon is absorbed and the model follows electrical energy. Effective irradiance and cell temperature translate reference module properties into photocurrent, saturation current, series resistance, shunt resistance, and thermal voltage.",
+        models: [["Default", "PVsyst diode parameters"], ["Alternate", "De Soto"], ["Outputs", "IL · I0 · Rs · Rsh · nNsVth"]],
+        note: "pvlib.pvsystem.calcparams_pvsyst. Reference conditions are 1000 W/m² and 25°C.", point: [552,426], node: 4, state: "electric"
+      },
+      {
+        phase: "Module DC", short: "Module IV curve", title: "Solve the module operating curve",
+        explanation: "The five diode parameters are solved with the Lambert W method. The result supplies maximum-power current, voltage, and power together with short-circuit current and open-circuit voltage for one module.",
+        models: [["Model", "single-diode equation"], ["Solver", "Lambert W"], ["Outputs", "Pmp · Imp · Vmp · Isc · Voc"]],
+        note: "pvlib.pvsystem.singlediode. PVWatts is an alternate route that scales reference power, current, and voltage directly.", point: [565,425], node: 4, state: "electric"
+      },
+      {
+        phase: "Module DC", short: "Degradation", title: "Apply age-related degradation",
+        explanation: "The default configuration applies no degradation. The warranted alternate removes initial and annual warranted degradation after commissioning, split equally between current and voltage terms.",
+        models: [["Default", "None"], ["Alternate", "warranted degradation"], ["Affected", "Imp · Vmp · Isc · Voc"]],
+        note: "The warranted path uses 365.2425 days/year and 50% current / 50% voltage factors.", point: [580,420], node: 4, state: "electric"
+      },
+      {
+        phase: "Module DC", short: "String voltage", title: "Scale one module to a series string",
+        explanation: "Modules wired in series add voltage while current remains the module current. Maximum-power and open-circuit voltage are multiplied by modules per string; maximum-power and short-circuit current pass through.",
+        models: [["Method", "ideal series scaling"], ["Voltage", "module V × modules/string"], ["Current", "unchanged"]],
+        note: "Function: StringIVCurve. Device merging and curve aggregation are intentionally omitted from the animation.", point: [600,412], node: 5, state: "electric"
+      },
+      {
+        phase: "DC delivery", short: "String DC wiring", title: "Lose power in string wiring",
+        explanation: "The standard-condition wiring-loss target is scaled by operating current relative to module standard current. Power is reduced by that in-situ fraction, then operating and open-circuit voltage are adjusted while current is held fixed.",
+        models: [["Default", "target STC loss"], ["Formula", "loss = Imp ratio × STC loss"], ["Fixed alternate", "1.5% at STC"]],
+        note: "Function: IVafterDCWiring; based on the SolarFarmer wiring-loss relationship.", point: [620,405], node: 5, state: "electric"
+      },
+      {
+        phase: "DC delivery", short: "Inverter DC wiring", title: "Lose power before the inverter",
+        explanation: "A second direct-current wiring segment repeats the current-scaled standard-condition loss model between the combiner output and inverter. Delivered power and voltage fall; current is unchanged.",
+        models: [["Default", "target STC loss"], ["Formula", "loss = current ratio × STC loss"], ["Fixed alternate", "0.25% at STC"]],
+        note: "Function: InverterDCWires. Combiner and inverter-input aggregation are omitted.", point: [650,402], node: 5, state: "electric"
+      },
+      {
+        phase: "Power conversion", short: "Inverter", title: "Convert direct current to alternating current",
+        explanation: "Direct-current operating voltage and power pass through the inverter’s measured performance curve. Nominal direct and alternating power, nominal voltage, startup power, four curve coefficients, and night tare determine output and clipping.",
+        models: [["Default", "Sandia inverter"], ["Inputs", "Vdc · Pdc · equipment coefficients"], ["Output", "AC power"]],
+        note: "pvlib.inverter.sandia. PVWatts is implemented as an alternate with 96% nominal efficiency.", point: [716,418], node: 6, state: "electric"
+      },
+      {
+        phase: "AC delivery", short: "AC wiring", title: "Apply inverter-to-transformer wiring loss",
+        explanation: "Alternating-current wiring loss grows with the square of inverter power and is normalized by nominal inverter power. The current hard-coded full-power loss is 0%, making this stage neutral today.",
+        models: [["Method", "quadratic power loss"], ["Formula", "P² ÷ Pnom × loss fraction"], ["Current setting", "0% at full power"]],
+        note: "Function: TransformerWiring.", point: [752,429], node: 6, state: "electric"
+      },
+      {
+        phase: "AC delivery", short: "Transformer", title: "Apply transformer losses",
+        explanation: "The transformer subtracts its constant no-load loss and its load-dependent loss as power passes to a higher-voltage collection system. Nameplate rating sets the loading basis.",
+        models: [["Model", "pvlib simple efficiency"], ["Inputs", "power · no-load loss · load loss · rating"], ["Output", "transformer output power"]],
+        note: "pvlib.transformer.simple_efficiency. Transformer grouping is omitted.", point: [790,444], node: 7, state: "electric"
+      },
+      {
+        phase: "Grid", short: "POI limit", title: "Enforce the grid export limit",
+        explanation: "The summed project power is bounded between zero and the point-of-interconnection export limit. Zero output is represented as missing; positive power below the limit passes through unchanged.",
+        models: [["Method", "lower and upper clipping"], ["Bounds", "0 W · project POI limit"], ["Output", "exported project power"]],
+        note: "Function: ProjectPowerAfterClipping. Project summation is omitted as requested; this is the final physical constraint.", point: [811,457], node: 7, state: "electric"
+      }
+    ];
+
+    const categoryTracks = [
+      { name: "atmosphere", start: 0, end: 8, from: 70, to: 270 },
+      { name: "dc", start: 9, end: 34, from: 325, to: 625 },
+      { name: "ac", start: 35, end: 38, from: 690, to: 850 }
+    ];
+
+    categoryTracks.forEach(category => {
+      const distance = category.end - category.start;
+      for (let index = category.start; index <= category.end; index += 1) {
+        const progress = distance ? (index - category.start) / distance : 0;
+        steps[index].point = [category.from + (category.to - category.from) * progress, 288];
+        steps[index].category = category.name;
+      }
+    });
+
+    const stepIcons = [
+      "icon-pressure", "icon-solar-position", "icon-relative-airmass",
+      "icon-absolute-airmass", "icon-dew-point", "icon-water-column",
+      "icon-extra-dni", "icon-direct", "icon-diffuse", "icon-control",
+      "icon-pitch", "icon-angles", "icon-reverse", "icon-selection",
+      "icon-sky", "icon-ground", "icon-beam", "icon-rear", "icon-sum",
+      "icon-direct-shade", "icon-cell-shade", "icon-diffuse-shade",
+      "icon-rear-loss", "icon-soiling", "icon-direct-reflection",
+      "icon-diffuse-reflection", "icon-spectrum", "icon-effective",
+      "icon-temperature", "icon-diode", "icon-iv-curve", "icon-degradation",
+      "icon-string", "icon-dc-wire-one", "icon-dc-wire-two", "icon-inverter",
+      "icon-ac-wire", "icon-transformer", "icon-grid"
+    ];
+
+    const title = document.querySelector("#stepTitle");
+    const explanation = document.querySelector("#stepExplanation");
+    const modelList = document.querySelector("#modelList");
+    const note = document.querySelector("#stepNote");
+    const stepNumber = document.querySelector("#stepNumber");
+    const stateLabel = document.querySelector("#stateLabel");
+    const particle = document.querySelector("#particle");
+    const particleGlow = document.querySelector("#particleGlow");
+    const stepIllustration = document.querySelector("#stepIllustration");
+    const stepIllustrationArt = document.querySelector("#stepIllustrationArt");
+    const progressBar = document.querySelector("#progressBar");
+    const timeline = document.querySelector("#timeline");
+    const playButton = document.querySelector("#playButton");
+    const previousButton = document.querySelector("#previousButton");
+    const nextButton = document.querySelector("#nextButton");
+    const restartButton = document.querySelector("#restartButton");
+    const speedSelect = document.querySelector("#speedSelect");
+    const sceneLabel = document.querySelector("#sceneLabel");
+    const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+    let current = 0;
+    let playing = !reduceMotion;
+    let timer;
+    let animation;
+
+    steps.forEach((step, index) => {
+      const button = document.createElement("button");
+      button.type = "button";
+      button.className = "step-button";
+      button.innerHTML = `<strong>${String(index + 1).padStart(2, "0")} · ${step.phase}</strong>${step.short}`;
+      button.addEventListener("click", () => {
+        showStep(index);
+        schedule();
+      });
+      timeline.append(button);
+    });
+
+    function moveParticle(from, to) {
+      animation?.cancel();
+      const [fromX, fromY] = steps[from].point;
+      const [toX, toY] = steps[to].point;
+      if (reduceMotion || from === to) {
+        particle.setAttribute("cx", toX);
+        particle.setAttribute("cy", toY);
+        particleGlow.setAttribute("cx", toX);
+        particleGlow.setAttribute("cy", toY);
+        return;
+      }
+      const duration = Math.min(1100, Number(speedSelect.value) * .32);
+      const keyframes = [
+        { transform: `translate(${fromX - toX}px, ${fromY - toY}px)` },
+        { transform: "translate(0, 0)" }
+      ];
+      particle.setAttribute("cx", toX);
+      particle.setAttribute("cy", toY);
+      particleGlow.setAttribute("cx", toX);
+      particleGlow.setAttribute("cy", toY);
+      animation = particle.animate(keyframes, { duration, easing: "cubic-bezier(.4,0,.2,1)" });
+      particleGlow.animate(keyframes, { duration, easing: "cubic-bezier(.4,0,.2,1)" });
+    }
+
+    function showStep(index) {
+      const previous = current;
+      current = index;
+      const step = steps[index];
+      title.textContent = step.title;
+      stepIllustrationArt.setAttribute("href", `#${stepIcons[index]}`);
+      stepIllustration.setAttribute("transform", `translate(${step.point[0]} ${step.point[1]})`);
+      if (!reduceMotion) {
+        stepIllustration.animate(
+          [{ opacity: 0 }, { opacity: 1 }],
+          { duration: 420, easing: "ease-out" }
+        );
+      }
+      explanation.textContent = step.explanation;
+      note.textContent = step.note;
+      stepNumber.textContent = `${String(index + 1).padStart(2, "0")} / ${String(steps.length).padStart(2, "0")}`;
+      stateLabel.textContent = step.state === "photon" ? "PHOTON" : "ELECTRICAL ENERGY";
+      sceneLabel.textContent = step.phase;
+      document.querySelectorAll(".category-boundary").forEach(boundary => {
+        boundary.classList.toggle("active", boundary.dataset.category === step.category);
+      });
+      stateLabel.classList.toggle("electric", step.state === "electric");
+      stepIllustration.classList.toggle("electric", step.state === "electric");
+      particle.classList.toggle("electric", step.state === "electric");
+      particleGlow.classList.toggle("electric", step.state === "electric");
+      modelList.replaceChildren(...step.models.map(([label, model]) => {
+        const row = document.createElement("div");
+        row.className = "model-line";
+        const labelElement = document.createElement("span");
+        labelElement.textContent = label;
+        const modelElement = document.createElement("span");
+        modelElement.className = "model-name";
+        modelElement.textContent = model;
+        row.append(labelElement, modelElement);
+        return row;
+      }));
+      document.querySelectorAll(".node").forEach((node, nodeIndex) => node.classList.toggle("active", nodeIndex === step.node));
+      document.querySelectorAll(".step-button").forEach((button, buttonIndex) => {
+        button.classList.toggle("active", buttonIndex === index);
+        button.classList.toggle("visited", buttonIndex < index);
+        button.setAttribute("aria-current", buttonIndex === index ? "step" : "false");
+      });
+      progressBar.style.width = `${(index / (steps.length - 1)) * 100}%`;
+      document.querySelector(".step-button.active")?.scrollIntoView({ behavior: reduceMotion ? "auto" : "smooth", block: "nearest", inline: "center" });
+      moveParticle(previous, index);
+    }
+
+    function schedule() {
+      window.clearTimeout(timer);
+      if (!playing) return;
+      timer = window.setTimeout(() => {
+        showStep((current + 1) % steps.length);
+        schedule();
+      }, Number(speedSelect.value));
+    }
+
+    playButton.addEventListener("click", () => {
+      playing = !playing;
+      playButton.textContent = playing ? "Pause" : "Play";
+      schedule();
+    });
+
+    previousButton.addEventListener("click", () => {
+      showStep((current - 1 + steps.length) % steps.length);
+      schedule();
+    });
+
+    nextButton.addEventListener("click", () => {
+      showStep((current + 1) % steps.length);
+      schedule();
+    });
+
+    restartButton.addEventListener("click", () => {
+      showStep(0);
+      playing = true;
+      playButton.textContent = "Pause";
+      schedule();
+    });
+
+    speedSelect.addEventListener("change", schedule);
+    window.addEventListener("keydown", event => {
+      if (event.key === "ArrowRight") showStep((current + 1) % steps.length);
+      if (event.key === "ArrowLeft") showStep((current - 1 + steps.length) % steps.length);
+    });
+
+    if (reduceMotion) playButton.textContent = "Play";
+    showStep(0);
+    schedule();
+  </script>
+</body>
+</html>

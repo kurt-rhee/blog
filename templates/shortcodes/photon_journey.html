@@ -1,0 +1,62 @@
+<div style="margin: 2rem 0; overflow: hidden;">
+  <iframe
+    src="../../photon-journey/"
+    title="Interactive pvlib solar simulation"
+    loading="eager"
+    scrolling="no"
+    style="display: block; width: 125%; height: 900px; border: 0; border-radius: 12px; overflow: hidden; transform: scale(0.8); transform-origin: top left;"
+    allowfullscreen>
+  </iframe>
+  <script>
+    (() => {
+      const frame = document.currentScript.previousElementSibling;
+      const container = frame.parentElement;
+      const scale = 0.8;
+      let observer;
+      let resizeFrame;
+
+      const resize = () => {
+        const document = frame.contentDocument;
+        if (!document) return;
+
+        const height = Math.ceil(Math.max(
+          document.body?.scrollHeight || 0,
+          document.documentElement.scrollHeight
+        ));
+
+        if (height > 0 && frame.dataset.contentHeight !== String(height)) {
+          frame.dataset.contentHeight = String(height);
+          frame.style.height = `${height}px`;
+          container.style.height = `${Math.ceil(height * scale)}px`;
+        }
+      };
+
+      const resetAndResize = () => {
+        observer?.disconnect();
+        window.cancelAnimationFrame(resizeFrame);
+        frame.dataset.contentHeight = "";
+        frame.style.height = "900px";
+        container.style.height = `${900 * scale}px`;
+        resizeFrame = window.requestAnimationFrame(() => {
+          resizeFrame = window.requestAnimationFrame(() => {
+            resize();
+            observer?.observe(frame.contentDocument.documentElement);
+          });
+        });
+      };
+
+      const watchContent = () => {
+        observer?.disconnect();
+        observer = new ResizeObserver(resize);
+        resetAndResize();
+      };
+
+      frame.addEventListener("load", watchContent);
+      window.addEventListener("resize", resetAndResize);
+
+      if (frame.contentDocument?.readyState === "complete") {
+        watchContent();
+      }
+    })();
+  </script>
+</div>
