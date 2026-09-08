@@ -54,7 +54,7 @@
       gap: 24px;
     }
 
-    header, .brand, .controls, .step-meta, .legend, .model-line {
+    header, .brand, .toolbar, .controls, .step-meta, .legend, .model-line {
       display: flex;
       align-items: center;
     }
@@ -77,6 +77,45 @@
     h1 { margin: 0; font: 600 clamp(20px, 2.3vw, 30px)/1.1 Georgia, serif; letter-spacing: -.02em; }
     .eyebrow { margin: 0 0 5px; color: var(--sun); font-size: 10px; font-weight: 750; letter-spacing: .18em; text-transform: uppercase; }
     .controls { gap: 9px; }
+    .toolbar { justify-content: flex-end; gap: 12px; flex-wrap: wrap; }
+
+    .rack-picker {
+      margin: 0;
+      padding: 3px;
+      display: flex;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: rgba(255, 255, 255, .035);
+    }
+
+    .visually-hidden {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
+    }
+
+    .rack-picker input { position: absolute; opacity: 0; pointer-events: none; }
+    .rack-picker label {
+      min-height: 32px;
+      padding: 7px 12px;
+      border-radius: 999px;
+      color: var(--muted);
+      font-size: 12px;
+      cursor: pointer;
+      transition: color .2s, background .2s, box-shadow .2s;
+    }
+    .rack-picker input:checked + label {
+      color: #0c111b;
+      background: var(--ink);
+      box-shadow: 0 2px 10px rgba(0, 0, 0, .25);
+    }
+    .rack-picker input:focus-visible + label { outline: 2px solid var(--sun); outline-offset: 2px; }
 
     .control {
       min-height: 38px;
@@ -141,11 +180,11 @@
     svg { width: 100%; height: 100%; position: absolute; inset: 0; }
     .route { fill: none; stroke: rgba(255,255,255,.13); stroke-width: 2; stroke-dasharray: 4 8; }
     .category-boundary { stroke-width: 1.5; transition: fill .35s, stroke .35s, filter .35s; }
-    .category-boundary.active { fill: rgba(255,255,255,.055); stroke: rgba(255,255,255,.55); filter: drop-shadow(0 0 10px rgba(255,255,255,.08)); }
+    .category-boundary.active { fill: rgba(255,255,255,.025); stroke: rgba(255,255,255,.55); }
     .category-title { fill: #f4f6fb; font-size: 14px; font-weight: 750; letter-spacing: .15em; text-anchor: middle; }
     .category-subtitle { fill: #7f8796; font-size: 10px; letter-spacing: .08em; text-anchor: middle; }
     .device-rail { stroke: rgba(255,255,255,.12); stroke-width: 2; }
-    .node { opacity: .48; transition: opacity .35s, filter .35s; }
+    .node { opacity: .65; transition: opacity .35s, filter .35s; }
     .node.active { opacity: 1; filter: drop-shadow(0 0 12px rgba(255,255,255,.18)); }
     .node-label { fill: #a7adba; font-size: 11px; text-anchor: middle; letter-spacing: .07em; text-transform: uppercase; }
     .node.active .node-label { fill: #fff; }
@@ -153,9 +192,15 @@
     #particle { fill: var(--photon); transition: fill .45s; }
     #particle.electric { fill: var(--electric); }
     #particleGlow.electric { fill: var(--electric); }
-    #stepIllustration { pointer-events: none; color: var(--sun); filter: drop-shadow(0 0 8px rgba(255, 209, 102, .4)); }
-    #stepIllustration.electric { color: var(--electric); filter: drop-shadow(0 0 8px rgba(94, 234, 212, .4)); }
+    #stepIllustration { pointer-events: none; color: var(--sun); }
+    #stepIllustration.electric { color: var(--electric); }
     .step-illustration-art { color: inherit; }
+    .illustration-halo { fill: #101c2c; stroke: currentColor; stroke-opacity: .55; }
+    .illustration-ring { fill: none; stroke: currentColor; stroke-opacity: .18; }
+    .scene-art { opacity: .55; transition: opacity .4s; }
+    .scene-art.active { opacity: 1; }
+    .diagram-label { fill: #a9bed5; font-size: 9px; letter-spacing: .12em; }
+    .diagram-line { fill: none; stroke: #8eaac9; stroke-width: 1; stroke-dasharray: 3 5; opacity: .45; }
 
     .legend {
       position: absolute;
@@ -227,7 +272,7 @@
     @media (max-width: 860px) {
       .shell { min-height: auto; }
       header { align-items: flex-start; }
-      .controls { flex-wrap: wrap; justify-content: flex-end; }
+      .toolbar, .controls { flex-wrap: wrap; justify-content: flex-end; }
       main { grid-template-columns: 1fr; }
       .visual { min-height: 390px; border-right: 0; border-bottom: 1px solid var(--line); }
       aside { min-height: 410px; }
@@ -237,7 +282,7 @@
     @media (max-width: 560px) {
       .shell { padding: 17px 12px; }
       header { display: grid; }
-      .controls { justify-content: flex-start; }
+      .toolbar, .controls { justify-content: flex-start; }
       .visual { min-height: 330px; }
       aside { min-height: 440px; padding: 28px 22px; }
       .timeline { display: flex; overflow-x: auto; padding-bottom: 4px; }
@@ -259,16 +304,25 @@
           <h1>A photon’s journey to the grid</h1>
         </div>
       </div>
-      <div class="controls" aria-label="Animation controls">
-        <button class="control" id="previousButton" type="button" aria-label="Previous modeling step">← Previous</button>
-        <button class="control primary" id="playButton" type="button">Pause</button>
-        <button class="control" id="nextButton" type="button" aria-label="Next modeling step">Next →</button>
-        <button class="control" id="restartButton" type="button">Restart</button>
-        <select class="control" id="speedSelect" aria-label="Animation speed">
-          <option value="6500">Slow</option>
-          <option value="4200" selected>Normal</option>
-          <option value="2400">Fast</option>
-        </select>
+      <div class="toolbar">
+        <fieldset class="rack-picker">
+          <legend class="visually-hidden">Modeled rack type</legend>
+          <input id="rackTracker" name="rackType" type="radio" value="tracker" checked>
+          <label for="rackTracker">Tracker</label>
+          <input id="rackFixed" name="rackType" type="radio" value="fixed">
+          <label for="rackFixed">Fixed tilt</label>
+        </fieldset>
+        <div class="controls" aria-label="Animation controls">
+          <button class="control" id="previousButton" type="button" aria-label="Previous modeling step">← Previous</button>
+          <button class="control primary" id="playButton" type="button">Pause</button>
+          <button class="control" id="nextButton" type="button" aria-label="Next modeling step">Next →</button>
+          <button class="control" id="restartButton" type="button">Restart</button>
+          <select class="control" id="speedSelect" aria-label="Animation speed">
+            <option value="6500">Slow</option>
+            <option value="4200" selected>Normal</option>
+            <option value="2400">Fast</option>
+          </select>
+        </div>
       </div>
     </header>
 
@@ -285,51 +339,88 @@
               <stop offset="1" stop-color="#f59e0b"/>
             </radialGradient>
             <linearGradient id="panelFill" x1="0" y1="0" x2="1" y2="1">
-              <stop stop-color="#426392"/>
-              <stop offset="1" stop-color="#152a47"/>
+              <stop stop-color="#4578ac"/>
+              <stop offset=".48" stop-color="#234976"/>
+              <stop offset="1" stop-color="#101f3d"/>
             </linearGradient>
+            <linearGradient id="atmosphereFill" x2="0" y2="1">
+              <stop stop-color="#78a6ff" stop-opacity="0"/>
+              <stop offset=".65" stop-color="#78a6ff" stop-opacity=".12"/>
+              <stop offset="1" stop-color="#78a6ff" stop-opacity=".32"/>
+            </linearGradient>
+            <linearGradient id="glassFill" x2="1" y2="1">
+              <stop stop-color="#d6edff" stop-opacity=".4"/>
+              <stop offset=".5" stop-color="#8abaff" stop-opacity=".04"/>
+              <stop offset="1" stop-color="#8abaff" stop-opacity=".2"/>
+            </linearGradient>
+            <linearGradient id="cabinetFill" x2="1" y2="1">
+              <stop stop-color="#33405c"/>
+              <stop offset="1" stop-color="#171e33"/>
+            </linearGradient>
+            <radialGradient id="sunCorona">
+              <stop stop-color="#ffd166" stop-opacity=".3"/>
+              <stop offset="1" stop-color="#ffd166" stop-opacity="0"/>
+            </radialGradient>
+            <pattern id="solarCells" width="18" height="14" patternUnits="userSpaceOnUse">
+              <rect x="1" y="1" width="16" height="12" rx="1.5" fill="none" stroke="#a2ceff" stroke-opacity=".55" stroke-width=".65"/>
+              <path d="M6 2v10M12 2v10" stroke="#a2ceff" stroke-opacity=".18" stroke-width=".5"/>
+            </pattern>
+            <marker id="lightArrow" viewBox="0 0 6 6" refX="5" refY="3" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
+              <path d="M0 0L6 3 0 6" fill="none" stroke="#ffd166" stroke-width="1"/>
+            </marker>
+            <symbol id="module-art" viewBox="0 0 110 100">
+              <ellipse cx="57" cy="89" rx="46" ry="5" fill="#020811" opacity=".55"/>
+              <path d="M32 54v31m48-43v39M26 87h16m31-4h15" fill="none" stroke="#7b8da5" stroke-width="3"/>
+              <path d="M8 31L82 9l21 49-74 23z" fill="#101e30" stroke="#99b9d7" stroke-width="1.5"/>
+              <g transform="matrix(.67 -.2 .21 .49 10 32)">
+                <rect width="108" height="96" fill="url(#panelFill)"/>
+                <rect width="108" height="96" fill="url(#solarCells)"/>
+                <path d="M0 0h108L0 70z" fill="url(#glassFill)"/>
+              </g>
+              <path d="M29 81v3l74-23v-3" fill="#4c6b89"/>
+            </symbol>
             <filter id="softGlow" x="-200%" y="-200%" width="400%" height="400%">
               <feGaussianBlur stdDeviation="8"/>
             </filter>
-            <symbol id="icon-pressure" viewBox="-12 -12 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M-10 8l6-11 4 6 3-4 7 9zM7-9v9m-3-3 3 3 3-3"/></symbol>
-            <symbol id="icon-solar-position" viewBox="-12 -12 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><circle r="4"/><path d="M0-11v3M0 8v3M-11 0h3M8 0h3M-8-8l2 2M6 6l2 2M8-8L6-6M-6 6l-2 2"/></symbol>
-            <symbol id="icon-relative-airmass" viewBox="-12 -12 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M-9 8h18M-9 3h18M-9-2h18M-8 8L7-8m-1 0h4v4"/></symbol>
-            <symbol id="icon-absolute-airmass" viewBox="-12 -12 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><circle cy="2" r="8"/><path d="M0 2l5-4M-5 6h10M0-10v4"/></symbol>
-            <symbol id="icon-dew-point" viewBox="-12 -12 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"><path d="M0-10S-7-2-7 4a7 7 0 0014 0C7-2 0-10 0-10z"/><path d="M-3 5a3 3 0 003 2"/></symbol>
-            <symbol id="icon-water-column" viewBox="-12 -12 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M-9-1a4 4 0 014-4 5 5 0 019-1 4 4 0 014 5zM-5 3v5M0 2v7M5 3v5"/></symbol>
-            <symbol id="icon-extra-dni" viewBox="-12 -12 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="-3" cy="2" r="7"/><circle cx="7" cy="-7" r="3"/><path d="M-10 2h14M-3-5c3 3 3 11 0 14M7-12v2M12-7h-2"/></symbol>
-            <symbol id="icon-direct" viewBox="-12 -12 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="-6" cy="-6" r="3"/><path d="M-3-3L8 8m0-5v5H3M-9 7h8"/></symbol>
-            <symbol id="icon-diffuse" viewBox="-12 -12 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M-9-2a4 4 0 014-4 5 5 0 019-1 4 4 0 014 5zM-6 2l-3 5M0 2v6M6 2l3 5"/></symbol>
-            <symbol id="icon-control" viewBox="-12 -12 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M-9-6H9M-9 0H9M-9 6H9"/><circle cx="-3" cy="-6" r="2" fill="#070b12"/><circle cx="5" r="2" fill="#070b12"/><circle cx="-5" cy="6" r="2" fill="#070b12"/></symbol>
-            <symbol id="icon-pitch" viewBox="-12 -12 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M-10 5l7-4v5l-7 4zM3 0l7-4v5L3 5zM-2-6H5m-7 0 3-2m-3 2 3 2m4-2L2-8m3 2L2-4"/></symbol>
-            <symbol id="icon-angles" viewBox="-12 -12 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M-9 8H9M-7 8L7-7M-2 8a7 7 0 012-5"/><circle cx="7" cy="-7" r="2"/></symbol>
-            <symbol id="icon-reverse" viewBox="-12 -12 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M8-6H-2a7 7 0 000 14h6M-7-10l-4 4 4 4M4 4l4 4-4 4"/></symbol>
-            <symbol id="icon-selection" viewBox="-12 -12 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M-9-7h5l4 7 4 7h5M-9 7h5l2-3M5-7h4M6-10l3 3-3 3M6 4l3 3-3 3"/></symbol>
-            <symbol id="icon-sky" viewBox="-12 -12 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M-10 2a4 4 0 014-4 5 5 0 019-1 4 4 0 014 5zM-8 7h16M-5 10h10"/></symbol>
-            <symbol id="icon-ground" viewBox="-12 -12 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M-10 7H10M-8 3h16M-6-9L4 1m0-5v5h-5"/></symbol>
-            <symbol id="icon-beam" viewBox="-12 -12 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M-9-9L7 7m0-6v6H1M-8 8h16"/></symbol>
-            <symbol id="icon-rear" viewBox="-12 -12 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M-8 2L5-5l3 6-13 7zM-9 9l4-1-2-3M9-7L5-5l2 3"/></symbol>
-            <symbol id="icon-sum" viewBox="-12 -12 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M7-9H-6l6 9-6 9H7M-10-5h4M-10 5h4"/></symbol>
-            <symbol id="icon-direct-shade" viewBox="-12 -12 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"><path d="M-10 1l8-4v6l-8 4zM2-2l8-4v6L2 4z"/><path d="M-3-9L8 2M-8 8h16" stroke-dasharray="2 2"/></symbol>
-            <symbol id="icon-cell-shade" viewBox="-12 -12 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><rect x="-9" y="-8" width="18" height="16" rx="1"/><path d="M-3-8V8M3-8V8M-9 0H9M-9-8L3 8" stroke-width="2.3"/></symbol>
-            <symbol id="icon-diffuse-shade" viewBox="-12 -12 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M-9-4a4 4 0 014-4 5 5 0 019-1 4 4 0 014 5zM-6 1l-3 4M0 1l-3 5M6 1L3 6M-9 9H9"/></symbol>
-            <symbol id="icon-rear-loss" viewBox="-12 -12 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M0-10l8 3v6c0 5-3 8-8 10-5-2-8-5-8-10v-6zM-4-3l8 6M4-3l-8 6"/></symbol>
-            <symbol id="icon-soiling" viewBox="-12 -12 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M-9 7L5-7M2-8l6 6M-7 5l3 3M-8-7h.1M-2-3h.1M7 6h.1"/><circle cx="-8" cy="-7" r="1" fill="currentColor" stroke="none"/><circle cx="-2" cy="-3" r="1" fill="currentColor" stroke="none"/><circle cx="7" cy="6" r="1" fill="currentColor" stroke="none"/></symbol>
-            <symbol id="icon-direct-reflection" viewBox="-12 -12 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M-9-8L0 1l9-9M-9 8L0 1l9 9M-10 1H10"/></symbol>
-            <symbol id="icon-diffuse-reflection" viewBox="-12 -12 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M-10 2H10M-7-8L-2 2M0-9L2 2M7-8L6 2M-7 9l5-7M0 10l2-8M8 8L6 2"/></symbol>
-            <symbol id="icon-spectrum" viewBox="-12 -12 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M-4-8L4 8H-10zM4 0l7-5M5 3l7-1M5 6l6 3"/></symbol>
-            <symbol id="icon-effective" viewBox="-12 -12 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M0-10v20M-10 0h20M-7-7L7 7M7-7L-7 7"/><circle r="3"/></symbol>
-            <symbol id="icon-temperature" viewBox="-12 -12 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><path d="M-2-8a3 3 0 016 0V3a5 5 0 11-6 0zM1-5v10"/><circle cx="1" cy="6" r="2"/></symbol>
-            <symbol id="icon-diode" viewBox="-12 -12 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M-10 0h5M5 0h5M-5-6L5 0l-10 6zM5-6V6M-8-8v3M-10-6h4"/></symbol>
-            <symbol id="icon-iv-curve" viewBox="-12 -12 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M-9-9V8H9M-7-6C-1-6 4-6 5-2s1 7 3 8M3-1h5M6-4v6"/></symbol>
-            <symbol id="icon-degradation" viewBox="-12 -12 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M-9-7l6 4 4-1 8 9M4 5h5V0M-9 9H9"/></symbol>
-            <symbol id="icon-string" viewBox="-12 -12 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="-10" y="-5" width="5" height="10"/><rect x="-2.5" y="-5" width="5" height="10"/><rect x="5" y="-5" width="5" height="10"/><path d="M-5 0h2.5M2.5 0H5"/></symbol>
-            <symbol id="icon-dc-wire-one" viewBox="-12 -12 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M-11 0h4l2-4 4 8 4-8 4 8 2-4h2M-8-8h6M-5-11v6"/></symbol>
-            <symbol id="icon-dc-wire-two" viewBox="-12 -12 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M-11 0h4l2-4 4 8 4-8 4 8 2-4h2M2-9h7M5.5-11v4"/></symbol>
-            <symbol id="icon-inverter" viewBox="-12 -12 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><rect x="-10" y="-8" width="20" height="16" rx="2"/><path d="M-7-3h6M-4-6v6M1 3c2-4 4 4 7 0"/></symbol>
-            <symbol id="icon-ac-wire" viewBox="-12 -12 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><path d="M-11 0c3-7 7-7 11 0s8 7 11 0M-8 8h16"/></symbol>
-            <symbol id="icon-transformer" viewBox="-12 -12 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M-10-8v16M10-8v16M-7-6c6 0 6 4 0 4 6 0 6 4 0 4 6 0 6 4 0 4M7-6c-6 0-6 4 0 4-6 0-6 4 0 4-6 0-6 4 0 4"/></symbol>
-            <symbol id="icon-grid" viewBox="-12 -12 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M0-10L-7 10M0-10l7 20M-5-4H5M-8 2H8M-10 10H10M0-10V10"/></symbol>
+            <symbol id="icon-pressure" viewBox="-12 -12 24 24" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"><path d="M-10 9l7-12L4 9z" fill="#78a6ff" fill-opacity=".2" stroke="#a5caff"/><path d="M-6 2l3 1 2-2M-10-8h9M-10-5h6" stroke="#a5caff" stroke-opacity=".5"/><path d="M7-9V3m-3-3 3 3 3-3M3 8h8"/><circle cx="-3" cy="-3" r="1.5" fill="currentColor" stroke="none"/></symbol>
+            <symbol id="icon-solar-position" viewBox="-12 -12 24 24" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"><path d="M-10 8a10 10 0 0120 0" stroke="#a5caff" stroke-dasharray="1 3"/><path d="M-11 8h22M0 8V-9" stroke="#a5caff" stroke-opacity=".5"/><path d="M0 8L6-3M0 3a5 5 0 013 1"/><circle cx="6" cy="-3" r="3" fill="#ffd166" fill-opacity=".3"/><path d="M6-9v1M11-3h-1M2-7l1 1"/></symbol>
+            <symbol id="icon-relative-airmass" viewBox="-13 -13 26 26" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"><path d="M-10 7Q0 1 10 7v3h-20z" fill="#78a6ff" fill-opacity=".18" stroke="none"/><path d="M-10 0Q0-6 10 0M-10 4Q0-2 10 4M-10 8Q0 2 10 8" stroke="#a5caff" stroke-opacity=".6"/><path d="M-6 7L7-9M3-8l4-1v4"/><path d="M-6 7V-9" stroke="#a5caff" stroke-dasharray="2 2" stroke-opacity=".4"/><circle cx="-6" cy="7" r="1.5" fill="currentColor"/></symbol>
+            <symbol id="icon-absolute-airmass" viewBox="-13 -13 26 26" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"><path d="M-10-8h8m-8 4h6m-6 4h4" stroke="#a5caff" stroke-opacity=".6"/><circle cx="2" cy="2" r="8" fill="#78a6ff" fill-opacity=".12" stroke="#a5caff"/><path d="M-3-2l1 1M2-4v2M7-2L6-1M-2 7h8" stroke="#a5caff"/><path d="M2 2l4-3"/><circle cx="2" cy="2" r="1.5" fill="currentColor"/><path d="M-6 4l-3 5m-1-3 1 3 3-1" stroke-opacity=".65"/></symbol>
+            <symbol id="icon-dew-point" viewBox="-13 -13 26 26" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"><path d="M-2-10S-9-2-9 3a7 7 0 0014 0c0-5-7-13-7-13z" fill="#78a6ff" fill-opacity=".2" stroke="#a5caff"/><path d="M-6 4q0 3 3 3" stroke="#d6edff"/><path d="M7-7a2 2 0 014 0V4a3 3 0 11-4 0z" fill="#10212f"/><path d="M9-3v9"/><circle cx="9" cy="6" r="1" fill="currentColor"/></symbol>
+            <symbol id="icon-water-column" viewBox="-13 -13 26 26" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"><path d="M-8-10h-3v20h3M8-10h3v20H8" stroke="#a5caff" stroke-opacity=".65"/><path d="M-7-4a3 3 0 013-3 4 4 0 017 0 3 3 0 014 3z" fill="#78a6ff" fill-opacity=".2" stroke="#a5caff"/><path d="M-4-1v5M1-1v7M6-1v4" stroke-dasharray="1 3"/><path d="M-7 8q3-2 7 0t7 0" stroke="#a5caff"/><path d="M-7 11H7" stroke="#a5caff" stroke-opacity=".4"/></symbol>
+            <symbol id="icon-extra-dni" viewBox="-13 -13 26 26" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"><circle cx="-6" cy="-6" r="3" fill="#ffd166" fill-opacity=".3"/><path d="M-6-11v1M-11-6h1M-2-10l-1 1"/><circle cx="4" cy="5" r="5" fill="#78a6ff" fill-opacity=".2" stroke="#a5caff"/><ellipse cx="4" cy="5" rx="2" ry="5" stroke="#a5caff" stroke-width=".7"/><path d="M-1 5H9" stroke="#a5caff" stroke-width=".7"/><path d="M-8 4Q-7 11 3 11M4-9Q11-8 11 0" stroke="#a5caff" stroke-opacity=".4" stroke-dasharray="2 2"/><path d="M-2-3L1 0m-3 0h3v-3"/></symbol>
+            <symbol id="icon-direct" viewBox="-13 -13 26 26" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"><circle cx="-6" cy="-7" r="3" fill="#ffd166" fill-opacity=".3"/><path d="M-10 9h20M-9 11h18" stroke="#a5caff" stroke-opacity=".7"/><path d="M-4-3L5 7M1 6l4 1v-4M1-5l9 10" /><path d="M-1 9V-8" stroke="#a5caff" stroke-opacity=".4" stroke-dasharray="2 2"/></symbol>
+            <symbol id="icon-diffuse" viewBox="-13 -13 26 26" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"><path d="M-10-3a4 4 0 014-4 5 5 0 019-1 4 4 0 014 5z" fill="#78a6ff" fill-opacity=".2" stroke="#a5caff"/><path d="M-5 0l-4 7m0-3v3h3M0 0v7m-2-2 2 2 2-2M5 0l4 7m-3 0h3V4"/><path d="M-10 10h20" stroke="#a5caff" stroke-opacity=".6"/></symbol>
+            <symbol id="icon-control" viewBox="-13 -13 26 26" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"><path d="M-10 7h20M0 2v5" stroke="#a5caff" stroke-opacity=".6"/><path d="M-8 0L6-5l2 5-14 5z" fill="#224b75" stroke="#a5caff"/><path d="M-3-2l2 5M2-4l2 5" stroke="#a5caff" stroke-width=".7"/><path d="M-9-4a10 10 0 0116-4M4-9l3 1-1-3"/><circle cy="2" r="1.5" fill="currentColor"/><path d="M-7 10H7" stroke="#a5caff" stroke-opacity=".4"/></symbol>
+            <symbol id="icon-pitch" viewBox="-13 -13 26 26" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"><path d="M-11 2l7-3 3 6-7 3zM2-2l7-3 3 6-7 3z" fill="#224b75" stroke="#a5caff"/><path d="M-6 5v5M7 1v9M-10 10h20" stroke="#a5caff" stroke-opacity=".5"/><path d="M-7-7H7m-11-2-3 2 3 2M4-9l3 2-3 2"/><path d="M-5 1l3 5M7-4l3 5" stroke="#a5caff" stroke-width=".7"/></symbol>
+            <symbol id="icon-angles" viewBox="-13 -13 26 26" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"><path d="M-10 9h20M-7 9V-9" stroke="#a5caff" stroke-opacity=".5" stroke-dasharray="2 2"/><path d="M-7 8L6-5l3 3L-4 11z" fill="#224b75" stroke="#a5caff"/><path d="M0 8a7 7 0 00-2-5"/><path d="M7-10L1-3m0-3v3h3"/><circle cx="-7" cy="8" r="1.5" fill="currentColor"/></symbol>
+            <symbol id="icon-reverse" viewBox="-13 -13 26 26" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"><path d="M-10 7h9M-9 10h7" stroke="#a5caff"/><path d="M2 5l7-3 2 5-7 3z" fill="#224b75" stroke="#a5caff"/><path d="M-6 3V0q0-6 6-6h7M4-9l3 3-3 3"/><path d="M6 0v-1M-1 8h2" stroke="#a5caff" stroke-opacity=".5"/><circle cx="-6" cy="5" r="1.5" fill="currentColor"/></symbol>
+            <symbol id="icon-selection" viewBox="-13 -13 26 26" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"><rect x="-10" y="-9" width="6" height="6" rx="1" fill="#78a6ff" fill-opacity=".2" stroke="#a5caff"/><rect x="-10" y="3" width="6" height="6" rx="1" fill="#78a6ff" fill-opacity=".1" stroke="#a5caff" stroke-opacity=".5"/><path d="M-4-6H0l4 6h6M7-3l3 3-3 3"/><path d="M-4 6H0l2-3" stroke="#a5caff" stroke-opacity=".4" stroke-dasharray="1 2"/><circle cx="4" r="2" fill="#10212f"/></symbol>
+            <symbol id="icon-sky" viewBox="-13 -13 26 26" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"><path d="M-10 7a10 10 0 0120 0" fill="#78a6ff" fill-opacity=".1" stroke="#a5caff"/><path d="M-10 10h20" stroke="#a5caff" stroke-opacity=".5"/><path d="M-7-2l4 6M0-5v8M7-2L3 4M-5 3l2 1V1M-2 1l2 2 2-2M3 1v3l2-1"/><path d="M-4 8l7-2 1 2-7 2z" fill="#224b75" stroke="#a5caff" stroke-width=".8"/></symbol>
+            <symbol id="icon-ground" viewBox="-12 -12 24 24" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"><path d="M-11 7h22M-9 10h3m3 0h3m3 0h3" stroke="#a5caff"/><path d="M-8-8L0 6l8-12M4-5l4-1 1 4"/><path d="M0 6l-2-8M0 6l10-3" stroke-opacity=".45"/><circle cy="6" r="1.5" fill="currentColor"/></symbol>
+            <symbol id="icon-beam" viewBox="-13 -13 26 26" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"><path d="M-9 6L6 1l3 6-15 5z" fill="#224b75" stroke="#a5caff"/><path d="M-4 4l3 6M1 3l3 6" stroke="#a5caff" stroke-width=".7"/><path d="M-8-9L0 2m-3-1 3 1v-3M-2-11L6 0"/><path d="M0 2l-2-10" stroke="#a5caff" stroke-dasharray="2 2" stroke-opacity=".5"/></symbol>
+            <symbol id="icon-rear" viewBox="-13 -13 26 26" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"><path d="M-10 0L5-6l4 6-15 6z" fill="#224b75" stroke="#a5caff"/><path d="M-6 6L9 0" stroke="#5eead4" stroke-width="2"/><path d="M-10 11h20" stroke="#a5caff" stroke-opacity=".5"/><path d="M-4 10L0 4m-3 1 3-1v3M5 10l3-5m-3 1 3-1v3"/><path d="M-6-1l4 5M0-4l4 5" stroke="#a5caff" stroke-width=".7"/></symbol>
+            <symbol id="icon-sum" viewBox="-13 -13 26 26" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"><path d="M-9-10l4 7M0-11v8M9-10L5-3" stroke="#ffd166"/><path d="M-9 2l15-4 3 9-15 4z" fill="#224b75" stroke="#a5caff"/><path d="M-3 0l3 9M3-2l3 9M-7 6L7 2" stroke="#a5caff" stroke-width=".7"/><circle cy="3" r="4" fill="#10212f" stroke="currentColor"/><path d="M-2 3h4M0 1v4" /></symbol>
+            <symbol id="icon-direct-shade" viewBox="-13 -13 26 26" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"><path d="M-10 3l6-4 4 7-6 4zM2 0l6-4 4 7-6 4z" fill="#224b75" stroke="#a5caff"/><path d="M-4-1L9 6 6 7 0 6z" fill="#070b12" fill-opacity=".85" stroke="none"/><path d="M-9-9l5 7M-3-10L5 2" /><path d="M5 2l4 4" stroke-opacity=".3" stroke-dasharray="1 2"/><path d="M-10 11h20" stroke="#a5caff" stroke-opacity=".4"/></symbol>
+            <symbol id="icon-cell-shade" viewBox="-12 -12 24 24" fill="none" stroke="currentColor" stroke-width="1.2"><rect x="-10" y="-9" width="20" height="18" rx="2" fill="#224b75" stroke="#a5caff"/><path d="M-3-9V9M3-9V9M-10 0h20" stroke="#a5caff" stroke-opacity=".65"/><path d="M-10-9H0L6 9h-16z" fill="#070b12" fill-opacity=".75" stroke="none"/><path d="M-7 5h3l2-3 3 6 2-3h4"/></symbol>
+            <symbol id="icon-diffuse-shade" viewBox="-13 -13 26 26" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"><path d="M-10 4a10 10 0 0120 0" fill="#78a6ff" fill-opacity=".12" stroke="#a5caff"/><path d="M-10 4V-3L0 4z" fill="#070b12" stroke="#a5caff" stroke-opacity=".5"/><path d="M0-3v5M7-1L4 3m-1-2 1 2 2-1"/><path d="M-8 8L6 4l2 4-14 4z" fill="#224b75" stroke="#a5caff"/><path d="M-7 0l4 3" stroke-opacity=".3" stroke-dasharray="1 2"/></symbol>
+            <symbol id="icon-rear-loss" viewBox="-13 -13 26 26" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"><path d="M-10 0L5-6l4 6-15 6z" fill="#224b75" stroke="#a5caff"/><path d="M-6 6L9 0" stroke="#5eead4" stroke-width="2"/><path d="M-10 11h20" stroke="#a5caff" stroke-opacity=".4"/><path d="M-4 10l3-5m-3 1 3-1v3"/><path d="M4 5l5 5M9 5l-5 5" stroke="#ff987e"/><path d="M0-4l3 5" stroke="#a5caff" stroke-width=".7"/></symbol>
+            <symbol id="icon-soiling" viewBox="-13 -13 26 26" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"><path d="M-10 1L5-5l5 10-15 6z" fill="#224b75" stroke="#a5caff"/><path d="M-5-1l5 10M0-3L5 7M-8 6L7 0" stroke="#a5caff" stroke-width=".7" stroke-opacity=".5"/><path d="M-8 1L5-4 7 0-5 5z" fill="#ffd166" fill-opacity=".18" stroke="none"/><g fill="#ffd166" stroke="none"><circle cx="-5" cy="1" r="1"/><circle cx="0" cy="-1" r="1.4"/><circle cx="4" cy="-2" r=".8"/><circle cx="3" cy="3" r="1"/><circle cx="-4" cy="-7" r="1"/><circle cx="2" cy="-9" r=".8"/></g></symbol>
+            <symbol id="icon-direct-reflection" viewBox="-12 -12 24 24" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"><path d="M-11 3h22v5h-22z" fill="#78a6ff" fill-opacity=".2" stroke="#a5caff"/><path d="M0-10V9" stroke="#a5caff" stroke-dasharray="2 2" stroke-opacity=".5"/><path d="M-9-8L0 3 9-8M5-7l4-1v4"/><path d="M0 3l4 7" stroke-opacity=".4"/></symbol>
+            <symbol id="icon-diffuse-reflection" viewBox="-13 -13 26 26" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"><path d="M-11 4h22v5h-22z" fill="#78a6ff" fill-opacity=".2" stroke="#a5caff"/><path d="M-9-7l5 11M-1-10L1 4M8-8L6 4" stroke-opacity=".6"/><path d="M-4 4l-5-4m0 3V0h3M1 4l3-9m-2 1 2-1 1 2M6 4l5-3" /><path d="M-4 4l1 6M1 4l1 6" stroke="#a5caff" stroke-opacity=".4"/></symbol>
+            <symbol id="icon-spectrum" viewBox="-12 -12 24 24" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"><path d="M-2-9L5 8H-9z" fill="url(#glassFill)" stroke="#bbd9ff"/><path d="M-11-2h6"/><path d="M2-1l9-7" stroke="#bd9cff"/><path d="M3 1l8-3" stroke="#78a6ff"/><path d="M4 3h7" stroke="#5eead4"/><path d="M5 5l6 3" stroke="#ffd166"/><path d="M5 7l5 4" stroke="#ff987e"/></symbol>
+            <symbol id="icon-effective" viewBox="-13 -13 26 26" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"><path d="M-9 4L6 0l3 7-15 4z" fill="#224b75" stroke="#a5caff"/><path d="M-4 3l3 6M1 1l3 7" stroke="#a5caff" stroke-width=".7"/><path d="M-7-9l4 8M0-10l3 8M7-10l3 7" stroke-opacity=".5"/><circle cx="1" cy="-3" r="5" fill="#10212f" stroke="#5eead4"/><path d="M-2-3l2 2 4-4" stroke="#5eead4"/></symbol>
+            <symbol id="icon-temperature" viewBox="-13 -13 26 26" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"><rect x="-10" y="-8" width="11" height="17" rx="1.5" fill="#224b75" stroke="#a5caff"/><path d="M-5-8V9M-10-2H1M-10 4H1" stroke="#a5caff" stroke-width=".7"/><path d="M5-7a2 2 0 014 0V3a4 4 0 11-4 0z" fill="#10212f"/><path d="M7-3v9" stroke="#ff987e" stroke-width="2"/><circle cx="7" cy="6" r="1.5" fill="#ff987e" stroke="none"/></symbol>
+            <symbol id="icon-diode" viewBox="-13 -13 26 26" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"><path d="M-10 8V-5H9V8z" stroke="#a5caff" stroke-opacity=".65"/><path d="M-10 2h7M4 2h5M-3-2l7 4-7 4zM4-2v8" fill="#5eead4" fill-opacity=".15"/><path d="M-7-11l3 4m-2-1 2 1v-2M-1-11l3 4m-2-1 2 1v-2" stroke="#ffd166"/><circle cx="-10" cy="8" r="1.5" fill="#a5caff" stroke="none"/><circle cx="9" cy="8" r="1.5" fill="currentColor" stroke="none"/></symbol>
+            <symbol id="icon-iv-curve" viewBox="-12 -12 24 24" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"><path d="M-9-10V9h20" stroke="#a5caff"/><path d="M-8-6C-2-6 3-6 5-3S6 5 8 8"/><path d="M4-4V9M-9-4H4" stroke-opacity=".4" stroke-dasharray="2 2"/><path d="M-8 8Q2-8 5-3T8 8" stroke="#bd9cff" stroke-opacity=".7"/><circle cx="4" cy="-4" r="2" fill="currentColor" stroke="#10212a" stroke-width=".8"/></symbol>
+            <symbol id="icon-degradation" viewBox="-13 -13 26 26" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"><path d="M-10-10V9h21" stroke="#a5caff" stroke-opacity=".65"/><path d="M-7-6H9" stroke="#a5caff" stroke-opacity=".4" stroke-dasharray="2 2"/><path d="M-7-5L-2-3 3-2 9 3M5 3h4v-4"/><path d="M-7-5L-2-3 3-2 9 3v5H-7z" fill="#5eead4" fill-opacity=".1" stroke="none"/><path d="M-5 9v2M1 9v2M7 9v2" stroke="#a5caff"/><circle cx="-7" cy="-5" r="1" fill="currentColor"/><circle cx="9" cy="3" r="1" fill="currentColor"/></symbol>
+            <symbol id="icon-string" viewBox="-13 -13 26 26" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"><g fill="#224b75" stroke="#a5caff"><rect x="-11" y="-7" width="6" height="12" rx="1"/><rect x="-3" y="-7" width="6" height="12" rx="1"/><rect x="5" y="-7" width="6" height="12" rx="1"/></g><path d="M-8-6V4M0-6V4M8-6V4M-10-1h4M-2-1h4M6-1h4" stroke="#a5caff" stroke-width=".6"/><path d="M-5 2h2M3 2h2M-8 5v4H8V5"/><path d="M-10-10h4M6-10h4M8-12v4" stroke-width="1"/></symbol>
+            <symbol id="icon-dc-wire-one" viewBox="-13 -13 26 26" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"><path d="M-11-5h6q3 0 3 3v4q0 3 3 3h10M-11-1h3q2 0 2 3v4q0 3 3 3h14" stroke="#5eead4"/><rect x="3" y="2" width="6" height="10" rx="1.5" fill="#193b43"/><path d="M6 3v8" stroke-opacity=".5"/><path d="M-9-10h4M-7-12v4M3-7h6" stroke="#a5caff"/></symbol>
+            <symbol id="icon-dc-wire-two" viewBox="-13 -13 26 26" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"><path d="M-11-8h5v8h7M-11 8h5V0" stroke="#5eead4"/><circle cx="-6" r="1.5" fill="#5eead4"/><rect x="1" y="-7" width="10" height="14" rx="2" fill="url(#cabinetFill)" stroke="#a5caff"/><path d="M4-3h4M6-5v4M4 3h4"/><path d="M-11-4h3M-11 4h3" stroke="#a5caff" stroke-opacity=".45"/></symbol>
+            <symbol id="icon-inverter" viewBox="-13 -13 26 26" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"><rect x="-9" y="-10" width="18" height="20" rx="2" fill="url(#cabinetFill)" stroke="#a5caff"/><path d="M-6 6L6-6" stroke="#a5caff" stroke-opacity=".5"/><path d="M-6-5h5M-6-2h5" stroke="#5eead4"/><path d="M1 4c2-5 3 5 5 0" stroke="#bd9cff"/><circle cx="5" cy="-7" r="1" fill="#5eead4" stroke="none"/><path d="M-11 0h2M9 0h2M-5 10v2M5 10v2" stroke="#a5caff"/></symbol>
+            <symbol id="icon-ac-wire" viewBox="-13 -13 26 26" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"><path d="M-11 0h22" stroke="#a5caff" stroke-opacity=".3" stroke-dasharray="2 2"/><path d="M-11 0c3-8 7-8 11 0s8 8 11 0" stroke="#bd9cff"/><path d="M-11 4c3-8 7-8 11 0s8 8 11 0" stroke="#78a6ff" stroke-opacity=".45" stroke-width=".8"/><path d="M-8-10H8m-3-2 3 2-3 2" stroke="#5eead4"/><path d="M-8 11H8" stroke="#a5caff" stroke-opacity=".4"/></symbol>
+            <symbol id="icon-transformer" viewBox="-13 -13 26 26" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"><rect x="-10" y="-9" width="20" height="18" rx="2" fill="url(#cabinetFill)" stroke="#a5caff" stroke-opacity=".7"/><path d="M-1-7V7M1-7V7" stroke="#a5caff"/><path d="M-6-6c4 0 4 4 0 4 4 0 4 4 0 4 4 0 4 4 0 4" stroke="#5eead4"/><path d="M6-6c-4 0-4 3 0 3-4 0-4 3 0 3-4 0-4 3 0 3-4 0-4 3 0 3" stroke="#bd9cff"/><path d="M-11-5h2M9-5h2M-11 5h2M9 5h2" stroke="#a5caff"/></symbol>
+            <symbol id="icon-grid" viewBox="-13 -13 26 26" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"><path d="M0-10L-6 11M0-10L6 11M-6 11l9-8-5-5M6 11l-9-8 5-5" stroke="#a5caff"/><path d="M-4-4h8M-7 2H7M-9 11H9" stroke="#a5caff"/><path d="M-4-4v3M4-4v3M-7 2v3M7 2v3" stroke="#bd9cff" stroke-width="1.8"/><path d="M-11-5l7 1M4-4l7-1M-11 1l4 1M7 2l4-1" stroke="#bd9cff" stroke-opacity=".6"/></symbol>
           </defs>
 
           <g aria-label="Model categories">
@@ -344,7 +435,51 @@
             <text class="category-subtitle" x="768" y="104">INVERTER OUTPUT TO GRID</text>
           </g>
 
-          <path class="route" d="M70 288H270 M325 288H625 M690 288H850"/>
+          <!-- Category vignettes share the same light, cell, and equipment vocabulary. -->
+          <g class="scene-art" data-category="atmosphere" aria-hidden="true">
+            <circle cx="82" cy="161" r="47" fill="url(#sunCorona)"/>
+            <circle cx="82" cy="161" r="17" fill="url(#sunFill)"/>
+            <circle cx="82" cy="161" r="23" fill="none" stroke="#ffd166" stroke-opacity=".2"/>
+            <path d="M44 231Q156 166 269 231v22H44z" fill="url(#atmosphereFill)"/>
+            <path d="M44 231Q156 166 269 231M44 242Q156 185 269 242M44 253Q156 205 269 253" fill="none" stroke="#9fc7ff" stroke-opacity=".3"/>
+            <path d="M99 173l56 61M115 171l65 66" fill="none" stroke="#ffd166" stroke-width="1.5" marker-end="url(#lightArrow)"/>
+            <path d="M139 199l-20 29m20-29 46-8" fill="none" stroke="#ffd166" stroke-opacity=".5" stroke-dasharray="3 4" marker-end="url(#lightArrow)"/>
+            <g fill="#a5cbff">
+              <circle cx="139" cy="199" r="3"/><circle cx="204" cy="213" r="2"/><circle cx="96" cy="222" r="2"/><circle cx="231" cy="234" r="2"/>
+            </g>
+            <path class="diagram-line" d="M172 156h66v39"/>
+            <text class="diagram-label" x="171" y="148">AIR COLUMN</text>
+          </g>
+
+          <g class="scene-art" data-category="dc" aria-hidden="true">
+            <path d="M336 240l174-43 112 36-173 35z" fill="#5eead4" fill-opacity=".035" stroke="#5eead4" stroke-opacity=".12"/>
+            <use href="#module-art" x="353" y="165" width="116" height="105" opacity=".6"/>
+            <use href="#module-art" x="423" y="145" width="132" height="120"/>
+            <path d="M419 132l28 42m-3-42 28 42m-3-42 28 42" stroke="#ffd166" stroke-width="1.5" marker-end="url(#lightArrow)"/>
+            <path d="M516 223h52v-35h30" fill="none" stroke="#5eead4" stroke-width="1.5"/>
+            <circle cx="568" cy="223" r="3" fill="#5eead4"/>
+            <path d="M580 172h26m-26 6h26" stroke="#5eead4" stroke-width="1.5"/>
+            <text class="diagram-label" x="558" y="157">DC OUTPUT</text>
+          </g>
+
+          <g class="scene-art" data-category="ac" aria-hidden="true">
+            <ellipse cx="767" cy="249" rx="88" ry="8" fill="#020811" opacity=".6"/>
+            <path d="M685 175l12-8h48l-12 8zM733 175l12-8v70l-12 8z" fill="#46516e" stroke="#8d9abd" stroke-width=".8"/>
+            <rect x="685" y="175" width="48" height="70" rx="3" fill="url(#cabinetFill)" stroke="#adbae0"/>
+            <rect x="693" y="185" width="31" height="22" rx="2" fill="#0b1726" stroke="#6e80ab" stroke-width=".7"/>
+            <path d="M697 196c4-11 9 11 14 0s8 9 10 0" fill="none" stroke="#5eead4" stroke-width="1.5"/>
+            <circle cx="697" cy="216" r="2" fill="#5eead4"/>
+            <path d="M704 216h16m-26 9h27m-27 5h27m-27 5h27" stroke="#8d9abd" stroke-opacity=".55"/>
+            <path d="M745 220h23v15h32" fill="none" stroke="#bd9cff" stroke-width="1.5"/>
+            <g transform="translate(833 185)" fill="none" stroke="#afbdd7" stroke-linejoin="round">
+              <path d="M0-47L-24 60M0-47L24 60M-24 60l39-38-26-23 18-21M24 60l-39-38L11-1-7-22" stroke-width="1.6"/>
+              <path d="M-17-22h34M-24-1h48M-30 22h60" stroke-width="2"/>
+              <path d="M-17-22v7M17-22v7M-24-1v7M24-1v7M-30 22v7M30 22v7" stroke="#bd9cff" stroke-width="2.5"/>
+            </g>
+            <path d="M753 154q27 18 63 9m-63 16q25 17 56 7" fill="none" stroke="#bd9cff" stroke-opacity=".4"/>
+          </g>
+
+          <path class="route" d="M70 320H270 M325 320H625 M690 320H850"/>
           <path class="device-rail" d="M70 468H850"/>
 
           <g class="node" data-node="0" transform="translate(70 468)">
@@ -363,29 +498,31 @@
           </g>
 
           <g class="node" data-node="2" transform="translate(347 458)">
-            <path d="M-37 2L28-18 40 12-25 32z" fill="url(#panelFill)" stroke="#78a6ff" stroke-width="2"/>
-            <g stroke="#94b8ef" opacity=".35">
-              <path d="M-20-3l11 30M-3-8L8 22M14-13l11 30M-31 13l65-20M-26 25l65-20"/>
-            </g>
-            <path d="M6 23v27M-10 28l-8 22M6 50h-24" fill="none" stroke="#697386" stroke-width="3"/>
+            <use href="#module-art" x="-43" y="-34" width="86" height="88"/>
             <text class="node-label" y="78">Module</text>
           </g>
 
           <g class="node" data-node="3" transform="translate(430 468)">
-            <circle r="20" fill="none" stroke="#bd9cff" stroke-width="2"/>
-            <path d="M-12 0h24M0-12v24" stroke="#bd9cff" stroke-width="2"/>
+            <path d="M0-24L-18 15h36z" fill="url(#glassFill)" stroke="#c5b5f4" stroke-width="1.5"/>
+            <path d="M-32-8L-9 0" stroke="#ffd166" stroke-width="2"/>
+            <path d="M8 0l24-13M10 4l22-1M12 8l20 11" stroke="#bd9cff" stroke-width="1.5"/>
+            <path d="M8 0l24-13" stroke="#78a6ff" stroke-width="1.5"/>
+            <path d="M12 8l20 11" stroke="#5eead4" stroke-width="1.5"/>
             <text class="node-label" y="49">Optics</text>
           </g>
 
           <g class="node" data-node="4" transform="translate(510 468)">
-            <rect x="-25" y="-20" width="50" height="40" rx="6" fill="#132d35" stroke="#5eead4"/>
-            <path d="M-15 0h8l5-9L7 9l5-9h8" fill="none" stroke="#5eead4" stroke-width="2"/>
+            <rect x="-24" y="-23" width="48" height="46" rx="5" fill="url(#panelFill)" stroke="#5eead4"/>
+            <path d="M-16-20v40M-8-20v40M0-20v40M8-20v40M16-20v40" stroke="#93caff" stroke-opacity=".35"/>
+            <path d="M-24-9h48M-24 9h48" stroke="#d9f3ff" stroke-width="2"/>
+            <circle cx="18" cy="-17" r="3" fill="#5eead4"/>
             <text class="node-label" y="48">PV cell</text>
           </g>
 
           <g class="node" data-node="5" transform="translate(595 468)">
-            <path d="M-35 0h70" stroke="#5eead4" stroke-width="4"/>
-            <path d="M-27-8l12 8-12 8M-3-8L9 0-3 8M21-8l12 8-12 8" fill="none" stroke="#5eead4"/>
+            <path d="M-32-7h20q7 0 7 7v8q0 7 7 7h30M-32 0h14q6 0 6 7v8q0 7 7 7h37" fill="none" stroke="#5eead4" stroke-width="2"/>
+            <rect x="9" y="10" width="15" height="17" rx="3" fill="#193b43" stroke="#7ad7ce"/>
+            <path d="M14 10v17M19 10v17" stroke="#5eead4" stroke-opacity=".4"/>
             <text class="node-label" y="36">DC wiring</text>
           </g>
 
@@ -400,17 +537,21 @@
           <g class="node" data-node="7" transform="translate(795 468)">
             <circle cx="-11" r="15" fill="none" stroke="#78a6ff" stroke-width="2"/>
             <circle cx="11" r="15" fill="none" stroke="#78a6ff" stroke-width="2"/>
-            <text class="node-label" y="40">Transformer</text>
+            <path d="M-3-19v38M3-19v38" stroke="#78a6ff" stroke-width="1.5"/>
+            <text class="node-label" x="-10" y="64">Transformer</text>
             <g transform="translate(60 0)" fill="none" stroke="#697386" stroke-width="2">
               <path d="M0-27L-17 24M0-27l17 51M-13-8h26M-18 8h36M-23 24h46"/>
             </g>
             <text class="node-label" x="60" y="40">Grid</text>
           </g>
 
-          <circle id="particleGlow" class="photon-glow" cx="70" cy="288" r="23" filter="url(#softGlow)"/>
-          <circle id="particle" cx="70" cy="288" r="6"/>
-          <g id="stepIllustration" transform="translate(70 288)" aria-hidden="true">
-            <use id="stepIllustrationArt" class="step-illustration-art" href="#icon-pressure" x="-27" y="-27" width="54" height="54"/>
+          <circle id="particleGlow" class="photon-glow" cx="70" cy="320" r="23" filter="url(#softGlow)"/>
+          <circle id="particle" cx="70" cy="320" r="6"/>
+          <g id="stepIllustration" transform="translate(70 320)" aria-hidden="true">
+            <path d="M0 12v20" stroke="currentColor" stroke-opacity=".5" stroke-dasharray="2 3"/>
+            <circle class="illustration-ring" cy="58" r="38"/>
+            <circle class="illustration-halo" cy="58" r="32"/>
+            <use id="stepIllustrationArt" class="step-illustration-art" href="#icon-pressure" x="-22" y="36" width="44" height="44"/>
           </g>
         </svg>
         <div class="legend" aria-hidden="true">
@@ -441,7 +582,7 @@
   </div>
 
   <script>
-    const steps = [
+    const allSteps = [
       {
         phase: "Meteorology", short: "Site pressure", title: "Convert elevation to pressure",
         explanation: "The atmospheric calculation begins with site elevation. Pressure is estimated from the standard atmosphere so later air-mass and irradiance calculations reflect the thinner air at higher elevations.",
@@ -497,22 +638,46 @@
         note: "pvlib.irradiance.complete_irradiance. This is a balance calculation, not a selectable model.", point: [272,211], node: 1, state: "photon"
       },
       {
-        phase: "Surface", short: "Control choice", title: "Choose the rack behavior",
-        explanation: "Rack type and module technology choose the surface-control branch. Fixed-tilt rows remain fixed. CdTe trackers use true tracking; other trackers use backtracking to reduce row-to-row beam shade.",
-        models: [["Fixed racks", "fixed tilt"], ["CdTe trackers", "true tracking"], ["Other trackers", "backtracking"]],
-        note: "Function: calc_rotation_algorithm. This selects the geometry calculation; it does not move data in this view.", point: [320,254], node: 2, state: "photon"
+        id: "tracker-control", semanticId: "rack-control", icon: "icon-control", racks: ["tracker"],
+        phase: "Surface", short: "Tracker control", title: "Choose the tracker control algorithm",
+        explanation: "Module technology selects how the tracker follows the sun. CdTe trackers use true tracking; other tracker modules use backtracking to reduce row-to-row beam shade.",
+        models: [["CdTe", "true tracking"], ["Other modules", "backtracking"], ["Output", "backtrack flag"]],
+        note: "Function: calc_rotation_algorithm. This selects the tracker geometry calculation.", node: 2, state: "photon"
       },
       {
-        phase: "Surface", short: "Row pitch", title: "Determine collector spacing",
-        explanation: "Fixed racks use entered pitch. For trackers, pitch is module length divided by ground-coverage ratio. Spacing affects backtracking, direct shade, diffuse masking, and rear irradiance.",
-        models: [["Fixed racks", "entered pitch"], ["Trackers", "length ÷ GCR"], ["Output", "pitch (m)"]],
-        note: "Function: calc_pitch. GCR means collector width divided by row pitch.", point: [355,292], node: 2, state: "photon"
+        id: "fixed-control", semanticId: "rack-control", icon: "icon-control", racks: ["fixed"],
+        phase: "Surface", short: "Fixed geometry", title: "Use the configured fixed-rack geometry",
+        explanation: "A fixed-tilt rack does not follow the sun. The configured tilt and row direction define a constant receiving surface for every timestamp.",
+        models: [["Rack behavior", "fixed tilt"], ["Inputs", "tilt · axis azimuth"], ["Motion", "none"]],
+        note: "The fixed-rack path bypasses the tracker rotation algorithm.", node: 2, state: "photon"
       },
       {
-        phase: "Surface", short: "Surface angles", title: "Orient the receiving surface",
-        explanation: "A tracker’s rotation, surface tilt, surface azimuth, and incidence angle are calculated from the sun and rack limits. A fixed rack uses entered tilt, axis azimuth plus 90°, and a direct incidence-angle calculation.",
-        models: [["Tracker", "pvlib singleaxis"], ["Fixed incidence", "pvlib aoi"], ["Outputs", "tilt · azimuth · AOI"]],
-        note: "Tracker inputs include maximum rotation, ground-coverage ratio, and the selected backtracking flag.", point: [402,355], node: 2, state: "photon"
+        id: "tracker-pitch", semanticId: "rack-pitch", icon: "icon-pitch", racks: ["tracker"],
+        phase: "Surface", short: "Tracker pitch", title: "Derive tracker row pitch",
+        explanation: "Tracker pitch is calculated from module length divided by ground-coverage ratio. Spacing affects backtracking, direct shade, diffuse masking, and rear irradiance.",
+        models: [["Method", "module length ÷ GCR"], ["Inputs", "length · ground-coverage ratio"], ["Output", "pitch (m)"]],
+        note: "Function: calc_pitch. GCR means collector width divided by row pitch.", node: 2, state: "photon"
+      },
+      {
+        id: "fixed-pitch", semanticId: "rack-pitch", icon: "icon-pitch", racks: ["fixed"],
+        phase: "Surface", short: "Fixed row pitch", title: "Use the entered fixed-row pitch",
+        explanation: "Fixed-row spacing comes directly from the configured pitch. It remains important to direct shade, diffuse masking, and rear irradiance even though the racks do not rotate.",
+        models: [["Method", "entered pitch"], ["Input", "fixed-row pitch"], ["Output", "pitch (m)"]],
+        note: "Function: calc_pitch. The fixed-rack value is used without deriving it from GCR.", node: 2, state: "photon"
+      },
+      {
+        id: "tracker-orientation", semanticId: "rack-orientation", icon: "icon-angles", racks: ["tracker"],
+        phase: "Surface", short: "Tracker orientation", title: "Orient the tracking surface",
+        explanation: "Tracker rotation, surface tilt, surface azimuth, and incidence angle are calculated from the sun, rack limits, ground-coverage ratio, and the selected backtracking flag.",
+        models: [["Model", "pvlib singleaxis"], ["Inputs", "sun · axis · limits · GCR"], ["Outputs", "tilt · azimuth · AOI"]],
+        note: "pvlib singleaxis calculates the time-varying tracker orientation.", node: 2, state: "photon"
+      },
+      {
+        id: "fixed-orientation", semanticId: "rack-orientation", icon: "icon-angles", racks: ["fixed"],
+        phase: "Surface", short: "Fixed orientation", title: "Orient the fixed receiving surface",
+        explanation: "The surface keeps its entered tilt and uses axis azimuth plus 90° for surface azimuth. The sun and those fixed angles determine incidence angle at each timestamp.",
+        models: [["Orientation", "fixed tilt · fixed azimuth"], ["Incidence", "pvlib aoi"], ["Outputs", "tilt · azimuth · AOI"]],
+        note: "The configured rack angles remain fixed while pvlib.aoi evaluates the changing sun position.", node: 2, state: "photon"
       },
       {
         phase: "Plane of array", short: "Reverse transposition", title: "Reconstruct horizontal irradiance",
@@ -678,34 +843,67 @@
       }
     ];
 
-    const categoryTracks = [
-      { name: "atmosphere", start: 0, end: 8, from: 70, to: 270 },
-      { name: "dc", start: 9, end: 34, from: 325, to: 625 },
-      { name: "ac", start: 35, end: 38, from: 690, to: 850 }
-    ];
+    const sharedStepMetadata = {
+      "Site pressure": ["site-pressure", "icon-pressure"],
+      "Solar position": ["solar-position", "icon-solar-position"],
+      "Relative air mass": ["relative-air-mass", "icon-relative-airmass"],
+      "Absolute air mass": ["absolute-air-mass", "icon-absolute-airmass"],
+      "Dew point": ["dew-point", "icon-dew-point"],
+      "Water column": ["water-column", "icon-water-column"],
+      "Extraterrestrial DNI": ["extraterrestrial-dni", "icon-extra-dni"],
+      "Direct irradiance": ["direct-irradiance", "icon-direct"],
+      "Diffuse irradiance": ["diffuse-irradiance", "icon-diffuse"],
+      "Reverse transposition": ["reverse-transposition", "icon-reverse"],
+      "Resource selection": ["resource-selection", "icon-selection"],
+      "Sky diffuse": ["sky-diffuse", "icon-sky"],
+      "Ground diffuse": ["ground-diffuse", "icon-ground"],
+      "Beam": ["beam", "icon-beam"],
+      "Rear irradiance": ["rear-irradiance", "icon-rear"],
+      "Gross POA": ["gross-poa", "icon-sum"],
+      "Direct shade": ["direct-shade", "icon-direct-shade"],
+      "Shade electrical effect": ["shade-electrical-effect", "icon-cell-shade"],
+      "Diffuse shade": ["diffuse-shade", "icon-diffuse-shade"],
+      "Rear losses": ["rear-losses", "icon-rear-loss"],
+      "Soiling": ["soiling", "icon-soiling"],
+      "Direct reflection": ["direct-reflection", "icon-direct-reflection"],
+      "Diffuse reflection": ["diffuse-reflection", "icon-diffuse-reflection"],
+      "Spectral response": ["spectral-response", "icon-spectrum"],
+      "Effective POA": ["effective-poa", "icon-effective"],
+      "Cell temperature": ["cell-temperature", "icon-temperature"],
+      "Diode parameters": ["diode-parameters", "icon-diode"],
+      "Module IV curve": ["module-iv-curve", "icon-iv-curve"],
+      "Degradation": ["degradation", "icon-degradation"],
+      "String voltage": ["string-voltage", "icon-string"],
+      "String DC wiring": ["string-dc-wiring", "icon-dc-wire-one"],
+      "Inverter DC wiring": ["inverter-dc-wiring", "icon-dc-wire-two"],
+      "Inverter": ["inverter", "icon-inverter"],
+      "AC wiring": ["ac-wiring", "icon-ac-wire"],
+      "Transformer": ["transformer", "icon-transformer"],
+      "POI limit": ["poi-limit", "icon-grid"]
+    };
 
-    categoryTracks.forEach(category => {
-      const distance = category.end - category.start;
-      for (let index = category.start; index <= category.end; index += 1) {
-        const progress = distance ? (index - category.start) / distance : 0;
-        steps[index].point = [category.from + (category.to - category.from) * progress, 288];
-        steps[index].category = category.name;
+    function categoryFor(step) {
+      if (step.phase === "Meteorology") return "atmosphere";
+      if (["Power conversion", "AC delivery", "Grid"].includes(step.phase)) return "ac";
+      return "dc";
+    }
+
+    allSteps.forEach(step => {
+      if (!step.id) {
+        const [id, icon] = sharedStepMetadata[step.short];
+        step.id = id;
+        step.semanticId = step.id;
+        step.icon = icon;
+        step.racks = ["tracker", "fixed"];
       }
+      step.category = categoryFor(step);
     });
 
-    const stepIcons = [
-      "icon-pressure", "icon-solar-position", "icon-relative-airmass",
-      "icon-absolute-airmass", "icon-dew-point", "icon-water-column",
-      "icon-extra-dni", "icon-direct", "icon-diffuse", "icon-control",
-      "icon-pitch", "icon-angles", "icon-reverse", "icon-selection",
-      "icon-sky", "icon-ground", "icon-beam", "icon-rear", "icon-sum",
-      "icon-direct-shade", "icon-cell-shade", "icon-diffuse-shade",
-      "icon-rear-loss", "icon-soiling", "icon-direct-reflection",
-      "icon-diffuse-reflection", "icon-spectrum", "icon-effective",
-      "icon-temperature", "icon-diode", "icon-iv-curve", "icon-degradation",
-      "icon-string", "icon-dc-wire-one", "icon-dc-wire-two", "icon-inverter",
-      "icon-ac-wire", "icon-transformer", "icon-grid"
-    ];
+    const categoryTracks = {
+      atmosphere: { from: 70, to: 270 },
+      dc: { from: 325, to: 625 },
+      ac: { from: 690, to: 850 }
+    };
 
     const title = document.querySelector("#stepTitle");
     const explanation = document.querySelector("#stepExplanation");
@@ -725,29 +923,50 @@
     const restartButton = document.querySelector("#restartButton");
     const speedSelect = document.querySelector("#speedSelect");
     const sceneLabel = document.querySelector("#sceneLabel");
+    const rackInputs = document.querySelectorAll('input[name="rackType"]');
     const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
+    let rackType = "tracker";
+    let activeSteps = [];
     let current = 0;
     let playing = !reduceMotion;
     let timer;
     let animation;
 
-    steps.forEach((step, index) => {
-      const button = document.createElement("button");
-      button.type = "button";
-      button.className = "step-button";
-      button.innerHTML = `<strong>${String(index + 1).padStart(2, "0")} · ${step.phase}</strong>${step.short}`;
-      button.addEventListener("click", () => {
-        showStep(index);
-        schedule();
+    function positionActiveSteps() {
+      Object.entries(categoryTracks).forEach(([category, track]) => {
+        const categorySteps = activeSteps.filter(step => step.category === category);
+        const distance = categorySteps.length - 1;
+        categorySteps.forEach((step, index) => {
+          const progress = distance ? index / distance : 0;
+          step.point = [track.from + (track.to - track.from) * progress, 320];
+        });
       });
-      timeline.append(button);
-    });
+    }
+
+    function rebuildTimeline(semanticId = activeSteps[current]?.semanticId) {
+      activeSteps = allSteps.filter(step => step.racks.includes(rackType));
+      positionActiveSteps();
+      timeline.replaceChildren(...activeSteps.map((step, index) => {
+        const button = document.createElement("button");
+        button.type = "button";
+        button.className = "step-button";
+        button.dataset.stepId = step.id;
+        button.innerHTML = `<strong>${String(index + 1).padStart(2, "0")} · ${step.phase}</strong>${step.short}`;
+        button.addEventListener("click", () => {
+          showStep(index);
+          schedule();
+        });
+        return button;
+      }));
+      const matchingIndex = activeSteps.findIndex(step => step.semanticId === semanticId);
+      showStep(matchingIndex >= 0 ? matchingIndex : Math.min(current, activeSteps.length - 1));
+    }
 
     function moveParticle(from, to) {
       animation?.cancel();
-      const [fromX, fromY] = steps[from].point;
-      const [toX, toY] = steps[to].point;
+      const [fromX, fromY] = activeSteps[from].point;
+      const [toX, toY] = activeSteps[to].point;
       if (reduceMotion || from === to) {
         particle.setAttribute("cx", toX);
         particle.setAttribute("cy", toY);
@@ -771,9 +990,9 @@
     function showStep(index) {
       const previous = current;
       current = index;
-      const step = steps[index];
+      const step = activeSteps[index];
       title.textContent = step.title;
-      stepIllustrationArt.setAttribute("href", `#${stepIcons[index]}`);
+      stepIllustrationArt.setAttribute("href", `#${step.icon}`);
       stepIllustration.setAttribute("transform", `translate(${step.point[0]} ${step.point[1]})`);
       if (!reduceMotion) {
         stepIllustration.animate(
@@ -783,10 +1002,10 @@
       }
       explanation.textContent = step.explanation;
       note.textContent = step.note;
-      stepNumber.textContent = `${String(index + 1).padStart(2, "0")} / ${String(steps.length).padStart(2, "0")}`;
+      stepNumber.textContent = `${String(index + 1).padStart(2, "0")} / ${String(activeSteps.length).padStart(2, "0")}`;
       stateLabel.textContent = step.state === "photon" ? "PHOTON" : "ELECTRICAL ENERGY";
       sceneLabel.textContent = step.phase;
-      document.querySelectorAll(".category-boundary").forEach(boundary => {
+      document.querySelectorAll(".category-boundary, .scene-art").forEach(boundary => {
         boundary.classList.toggle("active", boundary.dataset.category === step.category);
       });
       stateLabel.classList.toggle("electric", step.state === "electric");
@@ -808,9 +1027,10 @@
       document.querySelectorAll(".step-button").forEach((button, buttonIndex) => {
         button.classList.toggle("active", buttonIndex === index);
         button.classList.toggle("visited", buttonIndex < index);
-        button.setAttribute("aria-current", buttonIndex === index ? "step" : "false");
+        if (buttonIndex === index) button.setAttribute("aria-current", "step");
+        else button.removeAttribute("aria-current");
       });
-      progressBar.style.width = `${(index / (steps.length - 1)) * 100}%`;
+      progressBar.style.width = `${(index / (activeSteps.length - 1)) * 100}%`;
       document.querySelector(".step-button.active")?.scrollIntoView({ behavior: reduceMotion ? "auto" : "smooth", block: "nearest", inline: "center" });
       moveParticle(previous, index);
     }
@@ -819,7 +1039,7 @@
       window.clearTimeout(timer);
       if (!playing) return;
       timer = window.setTimeout(() => {
-        showStep((current + 1) % steps.length);
+        showStep((current + 1) % activeSteps.length);
         schedule();
       }, Number(speedSelect.value));
     }
@@ -831,30 +1051,42 @@
     });
 
     previousButton.addEventListener("click", () => {
-      showStep((current - 1 + steps.length) % steps.length);
+      showStep((current - 1 + activeSteps.length) % activeSteps.length);
       schedule();
     });
 
     nextButton.addEventListener("click", () => {
-      showStep((current + 1) % steps.length);
+      showStep((current + 1) % activeSteps.length);
       schedule();
     });
 
     restartButton.addEventListener("click", () => {
       showStep(0);
-      playing = true;
-      playButton.textContent = "Pause";
+      playing = !reduceMotion;
+      playButton.textContent = playing ? "Pause" : "Play";
       schedule();
     });
 
+    rackInputs.forEach(input => input.addEventListener("change", event => {
+      const semanticId = activeSteps[current].semanticId;
+      rackType = event.target.value;
+      document.body.dataset.rackType = rackType;
+      rebuildTimeline(semanticId);
+      schedule();
+    }));
+
     speedSelect.addEventListener("change", schedule);
     window.addEventListener("keydown", event => {
-      if (event.key === "ArrowRight") showStep((current + 1) % steps.length);
-      if (event.key === "ArrowLeft") showStep((current - 1 + steps.length) % steps.length);
+      if (["INPUT", "SELECT"].includes(event.target.tagName)) return;
+      if (event.key === "ArrowRight") showStep((current + 1) % activeSteps.length);
+      if (event.key === "ArrowLeft") showStep((current - 1 + activeSteps.length) % activeSteps.length);
     });
 
     if (reduceMotion) playButton.textContent = "Play";
-    showStep(0);
+    document.querySelector("#rackTracker").checked = true;
+    document.querySelector("#rackFixed").checked = false;
+    document.body.dataset.rackType = rackType;
+    rebuildTimeline();
     schedule();
   </script>
 </body>

@@ -24,9 +24,10 @@ The journey is divided into three physical sections:
 
 1. **Atmosphere:** solar position, air mass, water vapor, and the separation of
    measured sunlight into direct and diffuse components.
-2. **DC:** tracker geometry, irradiance on the module, shading, reflection,
+2. **DC:** rack geometry, irradiance on the module, shading, reflection,
    spectral response, cell temperature, diode behavior, degradation, and
-   direct-current wiring.
+   direct-current wiring. Use the rack-type toggle to select the tracker or
+   fixed-tilt modeling path.
 3. **AC:** inverter conversion, alternating-current wiring, transformer loss,
    and the final grid export limit.
 
